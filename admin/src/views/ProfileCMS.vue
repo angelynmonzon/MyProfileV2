@@ -278,21 +278,25 @@ export default {
       error.value = null
       try {
         const hasImage = heroFile.value || aboutFile.value
+        const imageKeys = ['profile_image', 'about_image']
         if (hasImage) {
           const fd = new FormData()
           Object.entries(profileData.value).forEach(([k, v]) => {
-            if (v !== null && v !== undefined) {
-              fd.append(k, typeof v === 'object' ? JSON.stringify(v) : v)
-            }
+            if (imageKeys.includes(k)) return
+            if (v === null || v === undefined) return
+            fd.append(k, typeof v === 'object' ? JSON.stringify(v) : v)
           })
           if (heroFile.value) fd.append('profile_image', heroFile.value)
           if (aboutFile.value) fd.append('about_image', aboutFile.value)
           await profileStore.updateProfileForm(fd)
         } else {
-          if (profileStore.profile) {
-            await profileStore.updateProfile(profileData.value)
+          const payload = Object.fromEntries(
+            Object.entries(profileData.value).filter(([k]) => !imageKeys.includes(k))
+          )
+          if (profileStore.profile?.id) {
+            await profileStore.updateProfile(payload)
           } else {
-            await profileStore.createProfile(profileData.value)
+            await profileStore.createProfile(payload)
           }
         }
         heroFile.value = null
@@ -301,8 +305,12 @@ export default {
         aboutPreview.value = null
         alert('Profile saved successfully!')
       } catch (err) {
-        error.value = err.message || 'Failed to save profile'
-        alert('Failed to save profile: ' + error.value)
+        const detail = err.response?.data
+        const msg = typeof detail === 'object'
+          ? Object.entries(detail).map(([k, v]) => `${k}: ${Array.isArray(v) ? v.join(', ') : v}`).join('\n')
+          : (err.message || 'Failed to save profile')
+        error.value = msg
+        alert('Failed to save profile:\n' + msg)
       } finally {
         loading.value = false
       }

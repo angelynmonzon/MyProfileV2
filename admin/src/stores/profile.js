@@ -62,16 +62,23 @@ export const useProfileStore = defineStore('profile', () => {
     }
   }
 
+  const getProfileId = async () => {
+    if (profile.value?.id) return profile.value.id
+    const data = await fetchMyProfile()
+    return data?.id
+  }
+
   const updateProfile = async (profileData) => {
     loading.value = true
     error.value = null
     try {
-      const response = await api.patch(`/profiles/${profile.value.id}/`, profileData)
+      const id = await getProfileId()
+      const response = await api.patch(`/profiles/${id}/`, profileData)
       profile.value = response.data
       return response.data
     } catch (err) {
       error.value = err.response?.data || 'Failed to update profile'
-      console.error('Update profile error:', err)
+      console.error('Update profile error:', err.response?.data || err)
       throw err
     } finally {
       loading.value = false
@@ -82,14 +89,15 @@ export const useProfileStore = defineStore('profile', () => {
     loading.value = true
     error.value = null
     try {
-      const response = await api.patch(`/profiles/${profile.value.id}/`, formData, {
+      const id = await getProfileId()
+      const response = await api.patch(`/profiles/${id}/`, formData, {
         headers: { 'Content-Type': 'multipart/form-data' }
       })
       profile.value = response.data
       return response.data
     } catch (err) {
       error.value = err.response?.data || 'Failed to update profile'
-      console.error('Update profile (form) error:', err)
+      console.error('Update profile (form) error:', err.response?.data || err)
       throw err
     } finally {
       loading.value = false
