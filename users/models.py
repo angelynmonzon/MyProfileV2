@@ -41,6 +41,7 @@ class Profile(models.Model):
     
     # Basic Information
     profile_image = models.ImageField(upload_to='profile_images/', blank=True, null=True)
+    about_image = models.ImageField(upload_to='about_images/', blank=True, null=True)
     title = models.CharField(max_length=200, help_text="Professional title (e.g., Virtual Assistant)")
     bio = models.TextField(help_text="Short professional biography")
     hero_description = models.TextField(blank=True, help_text="Short tagline shown on the hero section")

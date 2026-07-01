@@ -97,7 +97,7 @@ class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
         fields = [
-            'id', 'user', 'username', 'profile_image', 'title', 'bio', 'hero_description', 'full_name',
+            'id', 'user', 'username', 'profile_image', 'about_image', 'title', 'bio', 'hero_description', 'full_name',
             'email', 'phone', 'location', 'website_url',
             'linkedin_url', 'facebook_url', 'instagram_url', 'twitter_url', 'github_url',
             'services_offered', 'skills', 'is_available',
@@ -111,7 +111,7 @@ class ProfileCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
         fields = [
-            'profile_image', 'title', 'bio', 'hero_description', 'full_name',
+            'profile_image', 'about_image', 'title', 'bio', 'hero_description', 'full_name',
             'email', 'phone', 'location', 'website_url',
             'linkedin_url', 'facebook_url', 'instagram_url', 'twitter_url', 'github_url',
             'services_offered', 'skills', 'is_available'
@@ -126,7 +126,7 @@ class ProfileUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
         fields = [
-            'profile_image', 'title', 'bio', 'hero_description', 'full_name',
+            'profile_image', 'about_image', 'title', 'bio', 'hero_description', 'full_name',
             'email', 'phone', 'location', 'website_url',
             'linkedin_url', 'facebook_url', 'instagram_url', 'twitter_url', 'github_url',
             'services_offered', 'skills', 'is_available'

@@ -36,13 +36,14 @@
         </div>
       </div>
       <div class="hero-image-wrap">
-        <div class="image-ring"></div>
-        <div class="image-ring ring2"></div>
-        <div class="hero-avatar">
-          <img v-if="profile?.profile_image" :src="'http://localhost:8000/media/' + profile.profile_image" alt="Profile photo" />
-          <div v-else class="avatar-placeholder">
+        <div class="hero-img-dots"></div>
+        <div class="hero-img-accent"></div>
+        <div class="hero-portrait">
+          <img v-if="profile?.profile_image" :src="profile.profile_image" alt="Profile photo" />
+          <div v-else class="portrait-placeholder">
             <span class="script">G</span>
           </div>
+          <div class="portrait-overlay"></div>
         </div>
       </div>
     </div>
@@ -296,67 +297,77 @@ export default {
 .hero-image-wrap {
   flex-shrink: 0;
   position: relative;
-  width: 360px;
-  height: 360px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  width: 340px;
+  height: 460px;
   opacity: 0;
   animation: fadeIn 0.8s ease 0.5s forwards;
 }
 
-.image-ring {
+.hero-img-dots {
   position: absolute;
-  width: 390px;
-  height: 390px;
-  border-radius: 50%;
-  border: 1px solid rgba(226,185,111,0.18);
-  animation: rotate 22s linear infinite;
+  bottom: -20px;
+  right: -20px;
+  width: 120px;
+  height: 120px;
+  background-image: radial-gradient(circle, rgba(226,185,111,0.35) 1.5px, transparent 1.5px);
+  background-size: 14px 14px;
+  z-index: 0;
+  border-radius: 4px;
 }
 
-.ring2 {
-  width: 430px;
-  height: 430px;
-  border: 1px dashed rgba(226,185,111,0.08);
-  animation: rotate 35s linear infinite reverse;
+.hero-img-accent {
+  position: absolute;
+  top: -12px;
+  left: -12px;
+  width: 80px;
+  height: 80px;
+  border-top: 3px solid var(--color-gold);
+  border-left: 3px solid var(--color-gold);
+  border-radius: 4px 0 0 0;
+  z-index: 3;
+  opacity: 0.7;
 }
 
-@keyframes rotate {
-  from { transform: rotate(0deg); }
-  to   { transform: rotate(360deg); }
-}
-
-.hero-avatar {
-  width: 320px;
-  height: 320px;
-  border-radius: 50%;
+.hero-portrait {
+  width: 100%;
+  height: 100%;
+  border-radius: 16px;
   overflow: hidden;
-  border: 4px solid rgba(226,185,111,0.35);
-  box-shadow: 0 0 60px rgba(226,185,111,0.1), inset 0 0 30px rgba(0,0,0,0.3);
   position: relative;
   z-index: 1;
+  box-shadow: 0 30px 80px rgba(0,0,0,0.5), 0 0 0 1px rgba(226,185,111,0.15);
 }
 
-.hero-avatar img {
+.hero-portrait img {
   width: 100%;
   height: 100%;
   object-fit: cover;
+  object-position: top center;
+  display: block;
 }
 
-.avatar-placeholder {
+.portrait-overlay {
+  position: absolute;
+  bottom: 0; left: 0; right: 0;
+  height: 35%;
+  background: linear-gradient(to top, rgba(13,13,13,0.6), transparent);
+  pointer-events: none;
+}
+
+.portrait-placeholder {
   width: 100%;
   height: 100%;
-  background: linear-gradient(135deg, #1a1a2e, #0f3460);
+  background: linear-gradient(160deg, #1a1a2e 0%, #0f3460 100%);
   display: flex;
   align-items: center;
   justify-content: center;
 }
 
-.avatar-placeholder .script {
+.portrait-placeholder .script {
   font-family: 'Playlist-Script', cursive;
-  font-size: 9rem;
+  font-size: 10rem;
   color: var(--color-gold);
-  opacity: 0.6;
+  opacity: 0.5;
 }
 
 .scroll-hint {
@@ -422,10 +433,8 @@ export default {
   .hero-content { max-width: 100%; }
   .hero-bio { margin: 0 auto 2rem; }
   .hero-actions, .hero-socials { justify-content: center; }
-  .hero-image-wrap { width: 260px; height: 260px; }
-  .hero-avatar { width: 240px; height: 240px; }
-  .image-ring { width: 280px; height: 280px; }
-  .ring2 { width: 310px; height: 310px; }
+  .hero-image-wrap { width: 240px; height: 320px; }
+  .hero-img-dots { display: none; }
   .hero-name { font-size: 3rem; }
 }
 </style>

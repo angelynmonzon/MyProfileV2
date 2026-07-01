@@ -16,7 +16,7 @@
           :class="'reveal-delay-' + Math.min((i % 3)+1, 3)"
         >
           <div class="portfolio-thumb">
-            <img v-if="project.image" :src="'http://localhost:8000/media/' + project.image" :alt="project.title" />
+            <img v-if="project.image" :src="project.image" :alt="project.title" />
             <div v-else class="thumb-placeholder">
               <span>{{ project.title.charAt(0) }}</span>
             </div>

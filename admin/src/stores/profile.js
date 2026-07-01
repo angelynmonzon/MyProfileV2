@@ -78,6 +78,24 @@ export const useProfileStore = defineStore('profile', () => {
     }
   }
 
+  const updateProfileForm = async (formData) => {
+    loading.value = true
+    error.value = null
+    try {
+      const response = await api.patch(`/profiles/${profile.value.id}/`, formData, {
+        headers: { 'Content-Type': 'multipart/form-data' }
+      })
+      profile.value = response.data
+      return response.data
+    } catch (err) {
+      error.value = err.response?.data || 'Failed to update profile'
+      console.error('Update profile (form) error:', err)
+      throw err
+    } finally {
+      loading.value = false
+    }
+  }
+
   const fetchExperiences = async () => {
     loading.value = true
     error.value = null
@@ -289,6 +307,7 @@ export const useProfileStore = defineStore('profile', () => {
     fetchMyProfile,
     createProfile,
     updateProfile,
+    updateProfileForm,
     fetchExperiences,
     createExperience,
     updateExperience,

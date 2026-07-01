@@ -32,6 +32,13 @@ export default {
   computed: {
     skillGroups() {
       if (this.profile?.skills?.length > 0) {
+        const first = this.profile.skills[0]
+        if (first && typeof first === 'object' && first.category) {
+          return this.profile.skills.map(g => ({
+            label: g.category,
+            skills: Array.isArray(g.skills) ? g.skills : []
+          }))
+        }
         return [{ label: 'Skills', skills: this.profile.skills }]
       }
       return Object.entries(DEFAULT_SKILLS).map(([label, skills]) => ({ label, skills }))

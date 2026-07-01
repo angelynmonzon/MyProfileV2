@@ -11,6 +11,28 @@
       <div class="section">
         <h2>Basic Information</h2>
         <form @submit.prevent="saveProfile" class="profile-form">
+          <div class="image-upload-row">
+            <div class="form-group">
+              <label>Hero Photo <small>(shown in hero section)</small></label>
+              <div class="image-upload-box" @click="$refs.heroInput.click()">
+                <img v-if="heroPreview" :src="heroPreview" class="img-preview" alt="Hero preview" />
+                <img v-else-if="profileData.profile_image" :src="profileData.profile_image" class="img-preview" alt="Current hero" />
+                <div v-else class="upload-placeholder">📷 Click to upload</div>
+              </div>
+              <input ref="heroInput" type="file" accept="image/*" style="display:none" @change="onHeroChange" />
+              <button v-if="heroPreview" type="button" class="btn btn-danger btn-small" style="margin-top:0.4rem" @click="heroPreview=null; heroFile=null">Remove</button>
+            </div>
+            <div class="form-group">
+              <label>About Photo <small>(shown in about section)</small></label>
+              <div class="image-upload-box" @click="$refs.aboutInput.click()">
+                <img v-if="aboutPreview" :src="aboutPreview" class="img-preview" alt="About preview" />
+                <img v-else-if="profileData.about_image" :src="profileData.about_image" class="img-preview" alt="Current about" />
+                <div v-else class="upload-placeholder">📷 Click to upload</div>
+              </div>
+              <input ref="aboutInput" type="file" accept="image/*" style="display:none" @change="onAboutChange" />
+              <button v-if="aboutPreview" type="button" class="btn btn-danger btn-small" style="margin-top:0.4rem" @click="aboutPreview=null; aboutFile=null">Remove</button>
+            </div>
+          </div>
           <div class="form-group">
             <label>Full Name</label>
             <input v-model="profileData.full_name" type="text" />
@@ -110,14 +132,23 @@
       <!-- Skills -->
       <div class="section">
         <h2>Skills</h2>
-        <div class="skills-list">
-          <div v-for="(skill, index) in profileData.skills" :key="index" class="skill-item">
-            <input v-model="profileData.skills[index]" type="text" />
-            <button @click="removeSkill(index)" class="btn btn-danger">Remove</button>
+        <div class="skill-categories">
+          <div v-for="(group, gi) in profileData.skills" :key="gi" class="skill-category-block">
+            <div class="skill-category-header">
+              <input v-model="group.category" type="text" placeholder="Category name (e.g. Social Media)" class="category-name-input" />
+              <button @click="removeSkillGroup(gi)" class="btn btn-danger btn-small">Remove Group</button>
+            </div>
+            <div class="skill-tags-editor">
+              <div v-for="(skill, si) in group.skills" :key="si" class="skill-tag-item">
+                <input v-model="group.skills[si]" type="text" placeholder="Skill" />
+                <button @click="removeSkillItem(gi, si)" class="btn btn-danger btn-small">&times;</button>
+              </div>
+              <button @click="addSkillItem(gi)" class="btn btn-secondary btn-small">+ Add Skill</button>
+            </div>
           </div>
-          <button @click="addSkill" class="btn btn-secondary">Add Skill</button>
         </div>
-        <button @click="saveProfile" class="btn btn-primary">Save Skills</button>
+        <button @click="addSkillGroup" class="btn btn-secondary" style="margin-top:0.75rem">+ Add Category</button>
+        <button @click="saveProfile" class="btn btn-primary" style="margin-left:0.5rem">Save Skills</button>
       </div>
 
       <!-- Work Experience -->
@@ -142,7 +173,7 @@
 </template>
 
 <script>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, reactive } from 'vue'
 import { useProfileStore } from '../stores/profile'
 import ExperienceList from '../components/ExperienceList.vue'
 import EducationList from '../components/EducationList.vue'
@@ -158,7 +189,30 @@ export default {
   setup() {
     const profileStore = useProfileStore()
     
+    const stripMediaHost = (url) => url ? url.replace(/^https?:\/\/[^/]+/, '') : null
+
+    const heroFile = ref(null)
+    const heroPreview = ref(null)
+    const aboutFile = ref(null)
+    const aboutPreview = ref(null)
+
+    const onHeroChange = (e) => {
+      const file = e.target.files[0]
+      if (!file) return
+      heroFile.value = file
+      heroPreview.value = URL.createObjectURL(file)
+    }
+
+    const onAboutChange = (e) => {
+      const file = e.target.files[0]
+      if (!file) return
+      aboutFile.value = file
+      aboutPreview.value = URL.createObjectURL(file)
+    }
+
     const profileData = ref({
+      profile_image: null,
+      about_image: null,
       full_name: '',
       title: '',
       hero_description: '',
@@ -187,6 +241,8 @@ export default {
         const data = await profileStore.fetchMyProfile()
         if (data) {
           profileData.value = {
+            profile_image: stripMediaHost(data.profile_image) || null,
+            about_image: stripMediaHost(data.about_image) || null,
             full_name: data.full_name || '',
             title: data.title || '',
             hero_description: data.hero_description || '',
@@ -221,11 +277,28 @@ export default {
       loading.value = true
       error.value = null
       try {
-        if (profileStore.profile) {
-          await profileStore.updateProfile(profileData.value)
+        const hasImage = heroFile.value || aboutFile.value
+        if (hasImage) {
+          const fd = new FormData()
+          Object.entries(profileData.value).forEach(([k, v]) => {
+            if (v !== null && v !== undefined) {
+              fd.append(k, typeof v === 'object' ? JSON.stringify(v) : v)
+            }
+          })
+          if (heroFile.value) fd.append('profile_image', heroFile.value)
+          if (aboutFile.value) fd.append('about_image', aboutFile.value)
+          await profileStore.updateProfileForm(fd)
         } else {
-          await profileStore.createProfile(profileData.value)
+          if (profileStore.profile) {
+            await profileStore.updateProfile(profileData.value)
+          } else {
+            await profileStore.createProfile(profileData.value)
+          }
         }
+        heroFile.value = null
+        heroPreview.value = null
+        aboutFile.value = null
+        aboutPreview.value = null
         alert('Profile saved successfully!')
       } catch (err) {
         error.value = err.message || 'Failed to save profile'
@@ -243,12 +316,20 @@ export default {
       profileData.value.services_offered.splice(index, 1)
     }
 
-    const addSkill = () => {
-      profileData.value.skills.push('')
+    const addSkillGroup = () => {
+      profileData.value.skills.push({ category: '', skills: [] })
     }
 
-    const removeSkill = (index) => {
-      profileData.value.skills.splice(index, 1)
+    const removeSkillGroup = (gi) => {
+      profileData.value.skills.splice(gi, 1)
+    }
+
+    const addSkillItem = (gi) => {
+      profileData.value.skills[gi].skills.push('')
+    }
+
+    const removeSkillItem = (gi, si) => {
+      profileData.value.skills[gi].skills.splice(si, 1)
     }
 
     onMounted(() => {
@@ -257,13 +338,17 @@ export default {
 
     return {
       profileData,
+      heroFile, heroPreview, onHeroChange,
+      aboutFile, aboutPreview, onAboutChange,
       loading,
       error,
       saveProfile,
       addService,
       removeService,
-      addSkill,
-      removeSkill
+      addSkillGroup,
+      removeSkillGroup,
+      addSkillItem,
+      removeSkillItem
     }
   }
 }
@@ -273,6 +358,46 @@ export default {
 .profile-cms {
   max-width: 900px;
   margin: 0 auto;
+}
+
+.image-upload-row {
+  display: flex;
+  gap: 1.5rem;
+  margin-bottom: 0.5rem;
+}
+
+.image-upload-row .form-group {
+  flex: 1;
+}
+
+.image-upload-box {
+  width: 100%;
+  height: 180px;
+  border: 2px dashed #ccc;
+  border-radius: 8px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  overflow: hidden;
+  background: #fafafa;
+  transition: border-color 0.2s;
+}
+
+.image-upload-box:hover {
+  border-color: #3498db;
+}
+
+.img-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.upload-placeholder {
+  color: #aaa;
+  font-size: 0.9rem;
+  text-align: center;
 }
 
 h1 {
@@ -402,6 +527,64 @@ h2 {
   padding: 0.35rem 0.75rem;
   font-size: 0.82rem;
   align-self: flex-end;
+}
+
+.skill-categories {
+  display: flex;
+  flex-direction: column;
+  gap: 1rem;
+  margin-bottom: 0.75rem;
+}
+
+.skill-category-block {
+  background: #f8f9fa;
+  border: 1px solid #e0e0e0;
+  border-radius: 8px;
+  padding: 1rem;
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.skill-category-header {
+  display: flex;
+  gap: 0.75rem;
+  align-items: center;
+}
+
+.category-name-input {
+  flex: 1;
+  padding: 0.5rem 0.75rem;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  font-size: 0.95rem;
+  font-weight: 600;
+}
+
+.skill-tags-editor {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  align-items: center;
+}
+
+.skill-tag-item {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  background: white;
+  border: 1px solid #ddd;
+  border-radius: 20px;
+  padding: 0.2rem 0.2rem 0.2rem 0.5rem;
+}
+
+.skill-tag-item input {
+  border: none;
+  outline: none;
+  font-size: 0.85rem;
+  width: 110px;
+  background: transparent;
+  padding: 0.1rem 0.25rem;
 }
 
 .btn {
