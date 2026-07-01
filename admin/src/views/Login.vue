@@ -61,7 +61,7 @@ const handleLogin = async () => {
   
   try {
     await authStore.login(username.value, password.value)
-    router.push('/users')
+    router.push('/profile-cms')
   } catch (err) {
     error.value = 'Login failed. Please check your credentials.'
   } finally {

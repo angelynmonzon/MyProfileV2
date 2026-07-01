@@ -5,7 +5,7 @@ Run with: python reset_password.py
 import os
 import django
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'user_management.settings')
+os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'ging_profile_v2.settings')
 django.setup()
 
 from users.models import User

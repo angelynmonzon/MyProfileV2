@@ -4,7 +4,7 @@ import { useAuthStore } from '../stores/auth'
 const routes = [
   {
     path: '/',
-    redirect: '/users'
+    redirect: '/profile-cms'
   },
   {
     path: '/users',
@@ -28,6 +28,12 @@ const routes = [
     path: '/profile',
     name: 'Profile',
     component: () => import('../views/Profile.vue'),
+    meta: { requiresAuth: true }
+  },
+  {
+    path: '/profile-cms',
+    name: 'ProfileCMS',
+    component: () => import('../views/ProfileCMS.vue'),
     meta: { requiresAuth: true }
   },
   {

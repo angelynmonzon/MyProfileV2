@@ -136,15 +136,24 @@ class ProfileViewSet(viewsets.ModelViewSet):
             return ProfileUpdateSerializer
         return ProfileSerializer
 
+    def get_permissions(self):
+        if self.action == 'public':
+            return [AllowAny()]
+        return [IsAuthenticated()]
+
     def get_queryset(self):
         """
         Filter queryset based on user permissions:
         - SuperAdmin can see all profiles
         - Regular users can only see their own profile
         """
-        if self.request.user.is_superadmin():
+        if self.action == 'public':
+            return Profile.objects.filter(is_available=True)
+        if self.request.user.is_authenticated and self.request.user.is_superadmin():
             return Profile.objects.all()
-        return Profile.objects.filter(user=self.request.user)
+        if self.request.user.is_authenticated:
+            return Profile.objects.filter(user=self.request.user)
+        return Profile.objects.none()
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)

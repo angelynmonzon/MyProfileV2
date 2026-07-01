@@ -77,6 +77,16 @@ class PortfolioProjectSerializer(serializers.ModelSerializer):
         ]
         read_only_fields = ['id', 'created_at', 'updated_at']
 
+    def to_internal_value(self, data):
+        import json
+        if 'technologies' in data and isinstance(data.get('technologies'), str):
+            try:
+                data = data.copy()
+                data['technologies'] = json.loads(data['technologies'])
+            except (json.JSONDecodeError, AttributeError):
+                pass
+        return super().to_internal_value(data)
+
 
 class ProfileSerializer(serializers.ModelSerializer):
     experiences = ExperienceSerializer(many=True, read_only=True)
@@ -87,7 +97,7 @@ class ProfileSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
         fields = [
-            'id', 'user', 'username', 'profile_image', 'title', 'bio', 'full_name',
+            'id', 'user', 'username', 'profile_image', 'title', 'bio', 'hero_description', 'full_name',
             'email', 'phone', 'location', 'website_url',
             'linkedin_url', 'facebook_url', 'instagram_url', 'twitter_url', 'github_url',
             'services_offered', 'skills', 'is_available',
@@ -101,7 +111,7 @@ class ProfileCreateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
         fields = [
-            'profile_image', 'title', 'bio', 'full_name',
+            'profile_image', 'title', 'bio', 'hero_description', 'full_name',
             'email', 'phone', 'location', 'website_url',
             'linkedin_url', 'facebook_url', 'instagram_url', 'twitter_url', 'github_url',
             'services_offered', 'skills', 'is_available'
@@ -116,7 +126,7 @@ class ProfileUpdateSerializer(serializers.ModelSerializer):
     class Meta:
         model = Profile
         fields = [
-            'profile_image', 'title', 'bio', 'full_name',
+            'profile_image', 'title', 'bio', 'hero_description', 'full_name',
             'email', 'phone', 'location', 'website_url',
             'linkedin_url', 'facebook_url', 'instagram_url', 'twitter_url', 'github_url',
             'services_offered', 'skills', 'is_available'

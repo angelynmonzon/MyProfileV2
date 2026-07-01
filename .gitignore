@@ -40,6 +40,9 @@ db.sqlite3-journal
 admin/node_modules/
 admin/dist/
 admin/.vite/
+portfolio/node_modules/
+portfolio/dist/
+portfolio/.vite/
 
 # IDE
 .vscode/
