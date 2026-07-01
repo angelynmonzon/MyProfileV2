@@ -76,7 +76,16 @@ DEBUG=True
 SUPABASE_URL=your-supabase-url
 SUPABASE_KEY=your-supabase-anon-key
 SUPABASE_SERVICE_ROLE_KEY=your-supabase-service-role-key
+
+# Supabase PostgreSQL Database
+DB_NAME=postgres
+DB_USER=postgres.your-project-ref
+DB_PASSWORD=your-database-password
+DB_HOST=aws-0-region.pooler.supabase.com
+DB_PORT=5432
 ```
+
+The database connection string is available in your Supabase dashboard under **Project Settings > Database > Connection string**. Use the transaction or session pooler host.
 
 4. **Run migrations**:
 ```bash
@@ -181,11 +190,43 @@ Run Django tests:
 python manage.py test
 ```
 
+## Migrate from SQLite to Supabase PostgreSQL
+
+If you have existing data in `db.sqlite3`, follow these steps to migrate it to Supabase:
+
+1. **Ensure your `.env` has real Supabase database credentials**:
+   - `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_HOST`, `DB_PORT`
+
+2. **Dump all data from SQLite**:
+```bash
+python manage.py dumpdata --natural-primary --natural-foreign --all --indent 2 > data_dump.json
+```
+
+3. **Install the PostgreSQL driver**:
+```bash
+pip install psycopg2-binary==2.9.9
+```
+
+4. **Run migrations on Supabase PostgreSQL**:
+```bash
+python manage.py migrate
+```
+
+5. **Load data into Supabase PostgreSQL**:
+```bash
+python manage.py loaddata data_dump.json
+```
+
+6. **Create a new superuser if needed**:
+```bash
+python manage.py createsuperuser
+```
+
 ## Production Deployment
 
 1. Set `DEBUG=False` in Django settings
 2. Use environment variables for sensitive data
-3. Configure a production database (PostgreSQL recommended)
+3. Configure Supabase PostgreSQL (already configured via environment variables)
 4. Set up proper CORS origins
 5. Build the Vue frontend: `npm run build`
 6. Serve static files through Django or a CDN

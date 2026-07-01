@@ -54,3 +54,6 @@ portfolio/.vite/
 # OS
 .DS_Store
 Thumbs.db
+
+# Temporary data dumps
+data_dump.json
