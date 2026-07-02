@@ -1,22 +1,38 @@
-# User Management - Django + Vue + Supabase
+# Ging's Profile - Django + Vue + Supabase
 
-A full-stack application with Django backend, Vue.js admin panel, and Supabase integration for user management with role-based access control.
+A full-stack portfolio website with Django backend, Vue.js frontend, and Supabase integration for image storage. Includes a public portfolio site and an admin panel for content management.
 
 ## Features
 
+### Public Portfolio Site
+- **Hero Section**: Professional introduction with profile image
+- **About Section**: Personal bio and about image
+- **Services Section**: Display offered services with icons
+- **Skills Section**: Categorized skills with visibility toggles
+- **Experience Section**: Work experience timeline
+- **Education Section**: Education history
+- **Portfolio Projects**: Project showcase with images and videos
+- **Contact Section**: Contact information and social links
+- **Search**: Filter projects by title and description
+- **Video Support**: YouTube and Vimeo video thumbnails with lightbox playback
+- **Section Visibility**: Toggle sections on/off via admin panel
+
+### Admin Panel
 - **User Management**: Create, Read, Update, Delete users
 - **Role-Based Access Control**:
-  - **SuperAdmin**: Full CRUD access to all users
-  - **Editor**: Read-only access to users
-- **Authentication**: Token-based authentication with Supabase integration
-- **Modern Admin Panel**: Vue.js frontend with beautiful UI
+  - **SuperAdmin**: Full CRUD access to all users and profile management
+  - **Editor**: Profile management only
+- **Profile Management**: Edit all profile information, services, skills, experience, education, and projects
+- **Section Visibility**: Toggle portfolio sections on/off
+- **Authentication**: Token-based authentication
+- **Modern UI**: Clean, responsive Vue.js interface
 
 ## Project Structure
 
 ```
-user_management/
+ging_profile_v2/
 ├── manage.py                          # Django management script
-├── user_management/                   # Django project configuration
+├── ging_profile_v2/                   # Django project configuration
 │   ├── __init__.py
 │   ├── settings.py                    # Django settings
 │   ├── urls.py                        # Main URL configuration
@@ -24,16 +40,18 @@ user_management/
 │   └── asgi.py                        # ASGI configuration
 ├── users/                             # Users Django app
 │   ├── __init__.py
-│   ├── models.py                      # User model with roles
+│   ├── models.py                      # User, Profile, Experience, Education, PortfolioProject models
 │   ├── serializers.py                 # DRF serializers
 │   ├── views.py                       # API views
 │   ├── urls.py                        # Users URL routes
 │   ├── permissions.py                 # Custom permissions
 │   ├── admin.py                       # Django admin configuration
 │   ├── apps.py                        # App configuration
-│   ├── supabase_utils.py              # Supabase integration utilities
-│   └── signals.py                     # Django signals
-├── admin/                             # Vue.js admin panel
+│   ├── storage.py                     # Supabase storage backend
+│   └── management/                    # Django management commands
+│       └── commands/
+│           └── migrate_to_supabase.py # Migration script
+├── portfolio/                         # Vue.js frontend (combined portfolio + admin)
 │   ├── package.json                   # Node dependencies
 │   ├── vite.config.js                 # Vite configuration
 │   ├── index.html                     # Entry HTML
@@ -44,13 +62,35 @@ user_management/
 │       │   └── index.js               # Vue Router configuration
 │       ├── stores/
 │       │   ├── auth.js                # Authentication store
+│       │   ├── profile.js            # Profile store
 │       │   └── users.js               # Users store
+│       ├── api/
+│       │   └── profile.js            # Profile API calls
+│       ├── components/
+│       │   ├── NavBar.vue            # Navigation bar
+│       │   ├── HeroSection.vue        # Hero section
+│       │   ├── AboutSection.vue       # About section
+│       │   ├── ServicesSection.vue    # Services section
+│       │   ├── SkillsSection.vue      # Skills section
+│       │   ├── ExperienceSection.vue  # Experience section
+│       │   ├── EducationSection.vue   # Education section
+│       │   ├── PortfolioSection.vue   # Portfolio section with search
+│       │   ├── ContactSection.vue     # Contact section
+│       │   ├── FooterSection.vue      # Footer
+│       │   └── admin/                 # Admin components
+│       │       ├── ExperienceList.vue
+│       │       ├── EducationList.vue
+│       │       └── ProjectList.vue
 │       └── views/
-│           ├── Login.vue              # Login page
-│           ├── Users.vue              # Users list page
-│           ├── UserForm.vue           # User create/edit form
-│           └── Profile.vue            # User profile page
-└── requirements.txt                   # Python dependencies
+│           ├── Home.vue               # Portfolio home page
+│           └── admin/                 # Admin views
+│               ├── Login.vue          # Login page
+│               ├── ProfileCMS.vue     # Profile management
+│               ├── Users.vue          # Users list
+│               ├── UserForm.vue       # User create/edit
+│               └── Profile.vue        # User profile
+├── requirements.txt                   # Python dependencies
+└── start-all.ps1                      # PowerShell script to run all servers
 ```
 
 ## Setup Instructions
@@ -107,9 +147,9 @@ The Django API will be available at `http://localhost:8000`
 
 ### Frontend Setup (Vue.js)
 
-1. **Navigate to admin folder**:
+1. **Navigate to portfolio folder**:
 ```bash
-cd admin
+cd portfolio
 ```
 
 2. **Install dependencies**:
@@ -117,33 +157,74 @@ cd admin
 npm install
 ```
 
-3. **Set up environment variables**:
-Create a `.env` file in the `admin` folder:
-```env
-VITE_SUPABASE_URL=your-supabase-url
-VITE_SUPABASE_KEY=your-supabase-anon-key
-```
-
-4. **Run the development server**:
+3. **Run the development server**:
 ```bash
 npm run dev
 ```
 
-The Vue admin panel will be available at `http://localhost:8080`
+The Vue application will be available at `http://localhost:5174`
+
+### Quick Start (All Servers)
+
+On Windows, you can use the provided PowerShell script to run all servers simultaneously:
+```powershell
+.\start-all.ps1
+```
+
+This will start:
+- Django API on http://localhost:8000
+- Vue frontend on http://localhost:5174
+
+## Application Routes
+
+### Public Portfolio Site
+- `/` - Portfolio home page (public)
+
+### Admin Panel
+- `/admin` - Redirects to login
+- `/admin/login` - Login page
+- `/admin/profile-cms` - Profile management (requires authentication)
+- `/admin/users` - User management (requires SuperAdmin)
+- `/admin/users/create` - Create new user (requires SuperAdmin)
+- `/admin/users/:id/edit` - Edit user (requires SuperAdmin)
+- `/admin/profile` - View user profile (requires authentication)
 
 ## API Endpoints
 
-### Users API
+### Authentication
+- `POST /api/auth/login/` - Login with username/password
 
+### Users API
 - `GET /api/users/` - List all users (authenticated)
 - `POST /api/users/` - Create user (SuperAdmin only)
 - `GET /api/users/{id}/` - Get user details (authenticated)
 - `PUT /api/users/{id}/` - Update user (SuperAdmin only)
 - `PATCH /api/users/{id}/` - Partial update user (SuperAdmin only)
 - `DELETE /api/users/{id}/` - Delete user (SuperAdmin only)
-- `GET /api/users/me/` - Get current user (authenticated)
-- `GET /api/users/editors/` - List all editors (SuperAdmin only)
-- `GET /api/users/superadmins/` - List all superadmins (SuperAdmin only)
+
+### Profile API
+- `GET /api/profiles/public/` - Get public profile (no auth required)
+- `GET /api/profiles/my_profile/` - Get current user's profile (authenticated)
+- `POST /api/profiles/` - Create profile (authenticated)
+- `PATCH /api/profiles/{id}/` - Update profile (authenticated)
+
+### Experience API
+- `GET /api/experiences/` - List experiences (authenticated)
+- `POST /api/experiences/` - Create experience (authenticated)
+- `PATCH /api/experiences/{id}/` - Update experience (authenticated)
+- `DELETE /api/experiences/{id}/` - Delete experience (authenticated)
+
+### Education API
+- `GET /api/education/` - List education (authenticated)
+- `POST /api/education/` - Create education (authenticated)
+- `PATCH /api/education/{id}/` - Update education (authenticated)
+- `DELETE /api/education/{id}/` - Delete education (authenticated)
+
+### Portfolio Projects API
+- `GET /api/projects/` - List projects (authenticated)
+- `POST /api/projects/` - Create project (authenticated)
+- `PATCH /api/projects/{id}/` - Update project (authenticated)
+- `DELETE /api/projects/{id}/` - Delete project (authenticated)
 
 ## User Roles
 
@@ -162,26 +243,36 @@ The Vue admin panel will be available at `http://localhost:8080`
 ## Authentication
 
 The application uses token-based authentication. When logging in:
-1. The frontend attempts Supabase authentication first
-2. If Supabase auth fails, it falls back to Django authentication
-3. A token is returned and stored in localStorage
+1. The frontend sends username and password to Django API
+2. Django validates credentials and returns a token
+3. The token is stored in localStorage
 4. All subsequent API requests include the token in the Authorization header
 
 ## Supabase Integration
 
 The application integrates with Supabase for:
-- User authentication (optional, with Django fallback)
-- User data synchronization
-- Additional backend services
+- **Image Storage**: Profile images, project images, and other media files are stored in Supabase Storage
+- **PostgreSQL Database**: Optional - can use Supabase PostgreSQL instead of local SQLite
+- **Storage Backend**: Custom Django storage backend (`SupabaseStorage`) handles file uploads to Supabase
 
-When a user is created in Django, they are automatically synced to Supabase (if configured).
+### Migrating Images to Supabase
+
+If you have local images and want to migrate them to Supabase Storage:
+```bash
+python manage.py migrate_to_supabase
+```
+
+This command will:
+1. Find all images in local media directories
+2. Upload them to Supabase Storage bucket
+3. Update database records to use Supabase URLs
 
 ## Development
 
 ### Adding New Features
 
 1. **Backend**: Add new models, views, and serializers in the `users` app or create new Django apps
-2. **Frontend**: Add new Vue components in `admin/src/views/` and update the router
+2. **Frontend**: Add new Vue components in `portfolio/src/components/` or `portfolio/src/views/` and update the router
 
 ### Testing
 
