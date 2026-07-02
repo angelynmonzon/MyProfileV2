@@ -6,11 +6,11 @@
       </a>
       <nav class="nav-links" :class="{ open: menuOpen }">
         <a href="#about" @click.prevent="scrollTo('#about')">About</a>
-        <a href="#services" @click.prevent="scrollTo('#services')">Services</a>
-        <a href="#skills" @click.prevent="scrollTo('#skills')">Skills</a>
-        <a href="#experience" @click.prevent="scrollTo('#experience')">Experience</a>
-        <a href="#education" @click.prevent="scrollTo('#education')">Education</a>
-        <a href="#portfolio" @click.prevent="scrollTo('#portfolio')">Portfolio</a>
+        <a v-if="profile?.show_services" href="#services" @click.prevent="scrollTo('#services')">Services</a>
+        <a v-if="profile?.show_skills" href="#skills" @click.prevent="scrollTo('#skills')">Skills</a>
+        <a v-if="profile?.show_experience" href="#experience" @click.prevent="scrollTo('#experience')">Experience</a>
+        <a v-if="profile?.show_education" href="#education" @click.prevent="scrollTo('#education')">Education</a>
+        <a v-if="profile?.show_projects" href="#portfolio" @click.prevent="scrollTo('#portfolio')">Portfolio</a>
         <a href="#contact" @click.prevent="scrollTo('#contact')" class="nav-cta">Contact</a>
       </nav>
       <button class="hamburger" @click="menuOpen = !menuOpen" :class="{ active: menuOpen }">

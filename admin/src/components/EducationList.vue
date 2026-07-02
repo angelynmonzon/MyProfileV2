@@ -3,6 +3,12 @@
     <div v-if="loading" class="loading">Loading education...</div>
 
     <div v-else>
+      <div class="list-header">
+        <h2>Education</h2>
+        <button @click="showForm = true" class="btn btn-primary">
+          Add Education
+        </button>
+      </div>
       <div v-for="edu in education" :key="edu.id" class="education-item">
         <div class="education-header">
           <h3>{{ edu.degree }} from {{ edu.institution }}</h3>
@@ -42,10 +48,6 @@
           </p>
         </div>
       </div>
-
-      <button @click="showForm = true" class="btn btn-primary">
-        Add Education
-      </button>
     </div>
 
     <!-- Education Form Modal -->
@@ -269,6 +271,19 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+}
+
+.list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.list-header h2 {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 1.5rem;
 }
 
 .education-item {

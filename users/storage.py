@@ -21,9 +21,9 @@ class SupabaseStorage(Storage):
             from supabase import create_client
             supabase_url = getattr(settings, 'SUPABASE_URL')
             supabase_key = getattr(settings, 'SUPABASE_SERVICE_ROLE_KEY')
-            
+
             if supabase_url and supabase_key:
-                self.supabase = create_client(supabase_url=supabase_url, supabase_key=supabase_key)
+                self.supabase = create_client(supabase_url, supabase_key)
                 self.use_supabase = True
                 print(f"[Supabase] Storage initialized OK, bucket='{self.bucket_name}'")
             else:

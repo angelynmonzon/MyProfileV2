@@ -3,6 +3,12 @@
     <div v-if="loading" class="loading">Loading projects...</div>
 
     <div v-else>
+      <div class="list-header">
+        <h2>Portfolio Projects</h2>
+        <button @click="showForm = true" class="btn btn-primary">
+          Add Project
+        </button>
+      </div>
       <div v-for="project in projects" :key="project.id" class="project-item">
         <div class="project-header">
           <h3>{{ project.title }}</h3>
@@ -58,10 +64,6 @@
           </p>
         </div>
       </div>
-
-      <button @click="showForm = true" class="btn btn-primary">
-        Add Project
-      </button>
     </div>
 
     <!-- Project Form Modal -->
@@ -512,6 +514,19 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+}
+
+.list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.list-header h2 {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 1.5rem;
 }
 
 .project-item {

@@ -198,7 +198,7 @@
         <h2>Services Offered</h2>
         <div class="form-group checkbox">
           <label>
-            <input v-model="profileData.show_services" type="checkbox" />
+            <input v-model="profileData.show_services" type="checkbox" @change="saveProfile" />
             Show services section in portfolio
           </label>
         </div>
@@ -262,7 +262,7 @@
         <h2>Skills</h2>
         <div class="form-group checkbox">
           <label>
-            <input v-model="profileData.show_skills" type="checkbox" />
+            <input v-model="profileData.show_skills" type="checkbox" @change="saveProfile" />
             Show skills section in portfolio
           </label>
         </div>
@@ -334,7 +334,7 @@
         <h2>Work Experience</h2>
         <div class="form-group checkbox">
           <label>
-            <input v-model="profileData.show_experience" type="checkbox" />
+            <input v-model="profileData.show_experience" type="checkbox" @change="saveProfile" />
             Show work experience section in portfolio
           </label>
         </div>
@@ -346,7 +346,7 @@
         <h2>Education</h2>
         <div class="form-group checkbox">
           <label>
-            <input v-model="profileData.show_education" type="checkbox" />
+            <input v-model="profileData.show_education" type="checkbox" @change="saveProfile" />
             Show education section in portfolio
           </label>
         </div>
@@ -358,7 +358,7 @@
         <h2>Portfolio Projects</h2>
         <div class="form-group checkbox">
           <label>
-            <input v-model="profileData.show_projects" type="checkbox" />
+            <input v-model="profileData.show_projects" type="checkbox" @change="saveProfile" />
             Show portfolio projects section in portfolio
           </label>
         </div>
@@ -513,7 +513,12 @@ export default {
           Object.entries(profileData.value).forEach(([k, v]) => {
             if (imageKeys.includes(k)) return;
             if (v === null || v === undefined) return;
-            fd.append(k, typeof v === "object" ? JSON.stringify(v) : v);
+            // Handle boolean values explicitly
+            if (typeof v === "boolean") {
+              fd.append(k, v ? "true" : "false");
+            } else {
+              fd.append(k, typeof v === "object" ? JSON.stringify(v) : v);
+            }
           });
           if (heroFile.value) fd.append("profile_image", heroFile.value);
           if (aboutFile.value) fd.append("about_image", aboutFile.value);

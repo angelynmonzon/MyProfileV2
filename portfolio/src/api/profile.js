@@ -19,7 +19,13 @@ const normalizeProfile = (profile) => {
     projects: (profile.projects || []).map(p => ({
       ...p,
       image: stripMediaHost(p.image)
-    }))
+    })),
+    // Ensure show flags are preserved
+    show_services: profile.show_services !== undefined ? profile.show_services : true,
+    show_skills: profile.show_skills !== undefined ? profile.show_skills : true,
+    show_experience: profile.show_experience !== undefined ? profile.show_experience : true,
+    show_education: profile.show_education !== undefined ? profile.show_education : true,
+    show_projects: profile.show_projects !== undefined ? profile.show_projects : true
   }
 }
 

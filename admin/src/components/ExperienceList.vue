@@ -3,6 +3,12 @@
     <div v-if="loading" class="loading">Loading experiences...</div>
 
     <div v-else>
+      <div class="list-header">
+        <h2>Work Experience</h2>
+        <button @click="showForm = true" class="btn btn-primary">
+          Add Experience
+        </button>
+      </div>
       <div
         v-for="experience in experiences"
         :key="experience.id"
@@ -49,10 +55,6 @@
           <p><strong>Description:</strong> {{ experience.description }}</p>
         </div>
       </div>
-
-      <button @click="showForm = true" class="btn btn-primary">
-        Add Experience
-      </button>
     </div>
 
     <!-- Experience Form Modal -->
@@ -267,6 +269,19 @@ export default {
   display: flex;
   flex-direction: column;
   gap: 1rem;
+}
+
+.list-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 1rem;
+}
+
+.list-header h2 {
+  margin: 0;
+  color: #2c3e50;
+  font-size: 1.5rem;
 }
 
 .experience-item {

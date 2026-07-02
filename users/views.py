@@ -229,6 +229,7 @@ class PortfolioProjectViewSet(viewsets.ModelViewSet):
     """
     serializer_class = PortfolioProjectSerializer
     permission_classes = [IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser, JSONParser]
 
     def get_queryset(self):
         if self.request.user.is_superadmin():

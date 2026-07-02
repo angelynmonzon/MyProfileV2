@@ -88,9 +88,24 @@ class ProjectImageSerializer(serializers.ModelSerializer):
         return None
 
 
+class FlexibleJSONField(serializers.JSONField):
+    def to_internal_value(self, data):
+        if isinstance(data, str):
+            if not data.strip():
+                return []
+            try:
+                import json
+                return json.loads(data)
+            except json.JSONDecodeError:
+                return []
+        return super().to_internal_value(data)
+
+
 class PortfolioProjectSerializer(serializers.ModelSerializer):
     project_images = ProjectImageSerializer(many=True, read_only=True)
     image_url = serializers.SerializerMethodField()
+    video_links = FlexibleJSONField(required=False, allow_null=True)
+    technologies = FlexibleJSONField(required=False, allow_null=True)
 
     class Meta:
         model = PortfolioProject
@@ -110,22 +125,6 @@ class PortfolioProjectSerializer(serializers.ModelSerializer):
                 return request.build_absolute_uri(url)
             return url
         return None
-
-    def to_internal_value(self, data):
-        import json
-        if 'technologies' in data and isinstance(data.get('technologies'), str):
-            try:
-                data = data.copy()
-                data['technologies'] = json.loads(data['technologies'])
-            except (json.JSONDecodeError, AttributeError):
-                pass
-        if 'video_links' in data and isinstance(data.get('video_links'), str):
-            try:
-                data = data.copy()
-                data['video_links'] = json.loads(data['video_links'])
-            except (json.JSONDecodeError, AttributeError):
-                pass
-        return super().to_internal_value(data)
 
 
 class ProfileSerializer(serializers.ModelSerializer):
