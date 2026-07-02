@@ -8,11 +8,11 @@ from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
-from .models import User, Profile, Experience, Education, PortfolioProject, ProjectImage
+from .models import User, Profile, Experience, Education, PortfolioProject, ProjectImage, Testimonial, Certificate
 from .serializers import (
     UserSerializer, UserCreateSerializer, UserUpdateSerializer,
     ProfileSerializer, ProfileCreateSerializer, ProfileUpdateSerializer,
-    ExperienceSerializer, EducationSerializer, PortfolioProjectSerializer, ProjectImageSerializer
+    ExperienceSerializer, EducationSerializer, PortfolioProjectSerializer, ProjectImageSerializer, TestimonialSerializer, CertificateSerializer
 )
 from .permissions import IsSuperAdmin, IsSuperAdminOrReadOnly
 
@@ -265,3 +265,43 @@ class ProjectImageViewSet(viewsets.ModelViewSet):
                 raise serializers.ValidationError("Invalid project ID")
         else:
             raise serializers.ValidationError("Project ID is required")
+
+
+class TestimonialViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet for Testimonial model.
+    - Users can manage their own testimonials
+    - SuperAdmin can manage all testimonials
+    """
+    serializer_class = TestimonialSerializer
+    permission_classes = [IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser, JSONParser]
+
+    def get_queryset(self):
+        if self.request.user.is_superadmin():
+            return Testimonial.objects.all()
+        return Testimonial.objects.filter(profile__user=self.request.user)
+
+    def perform_create(self, serializer):
+        profile, created = Profile.objects.get_or_create(user=self.request.user)
+        serializer.save(profile=profile)
+
+
+class CertificateViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet for Certificate model.
+    - Users can manage their own certificates
+    - SuperAdmin can manage all certificates
+    """
+    serializer_class = CertificateSerializer
+    permission_classes = [IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser, JSONParser]
+
+    def get_queryset(self):
+        if self.request.user.is_superadmin():
+            return Certificate.objects.all()
+        return Certificate.objects.filter(profile__user=self.request.user)
+
+    def perform_create(self, serializer):
+        profile, created = Profile.objects.get_or_create(user=self.request.user)
+        serializer.save(profile=profile)

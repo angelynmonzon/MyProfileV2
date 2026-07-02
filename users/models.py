@@ -78,6 +78,8 @@ class Profile(models.Model):
     show_experience = models.BooleanField(default=True, help_text="Show work experience section in portfolio")
     show_education = models.BooleanField(default=True, help_text="Show education section in portfolio")
     show_projects = models.BooleanField(default=True, help_text="Show portfolio projects section in portfolio")
+    show_testimonials = models.BooleanField(default=True, help_text="Show testimonials section in portfolio")
+    show_certificates = models.BooleanField(default=True, help_text="Show certificates section in portfolio")
     
     created_at = models.DateTimeField(auto_now_add=True)
     updated_at = models.DateTimeField(auto_now=True)
@@ -151,11 +153,43 @@ class PortfolioProject(models.Model):
 class ProjectImage(models.Model):
     """Additional images for portfolio projects"""
     project = models.ForeignKey(PortfolioProject, on_delete=models.CASCADE, related_name='project_images')
-    image = models.ImageField(upload_to='portfolio_images/', storage=_supabase_storage)
+    image = models.ImageField(upload_to='portfolio_images/', blank=True, null=True, storage=_supabase_storage)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         ordering = ['created_at']
 
+
+class Testimonial(models.Model):
+    """Testimonials for the profile"""
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='testimonials')
+    image = models.ImageField(upload_to='testimonials/', storage=_supabase_storage, blank=True, null=True)
+    name = models.CharField(max_length=200, blank=True, help_text="Name of the person giving testimonial")
+    role = models.CharField(max_length=200, blank=True, help_text="Role/Title of the person")
+    is_visible = models.BooleanField(default=True, help_text="Show this testimonial in portfolio")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-created_at']
+
     def __str__(self):
-        return f"Image for {self.project.title}"
+        return f"Testimonial from {self.name or 'Anonymous'}"
+
+
+class Certificate(models.Model):
+    """Certificates for the profile"""
+    profile = models.ForeignKey(Profile, on_delete=models.CASCADE, related_name='certificates')
+    image = models.ImageField(upload_to='certificates/', storage=_supabase_storage, blank=True, null=True)
+    title = models.CharField(max_length=200, blank=True, help_text="Certificate title")
+    issuer = models.CharField(max_length=200, blank=True, help_text="Issuing organization")
+    date = models.DateField(blank=True, null=True, help_text="Date issued")
+    is_visible = models.BooleanField(default=True, help_text="Show this certificate in portfolio")
+    created_at = models.DateTimeField(auto_now_add=True)
+    updated_at = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        ordering = ['-date', '-created_at']
+
+    def __str__(self):
+        return f"Certificate: {self.title or 'Untitled'}"

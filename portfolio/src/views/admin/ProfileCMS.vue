@@ -18,6 +18,8 @@
             'experience',
             'education',
             'projects',
+            'testimonials',
+            'certificates',
           ]"
           :key="tab"
           @click="activeTab = tab"
@@ -364,6 +366,30 @@
         </div>
         <ProjectList />
       </div>
+
+      <!-- Testimonials -->
+      <div v-show="activeTab === 'testimonials'" class="section">
+        <h2>Testimonials</h2>
+        <div class="form-group checkbox">
+          <label>
+            <input v-model="profileData.show_testimonials" type="checkbox" @change="saveProfile" />
+            Show testimonials section in portfolio
+          </label>
+        </div>
+        <TestimonialList />
+      </div>
+
+      <!-- Certificates -->
+      <div v-show="activeTab === 'certificates'" class="section">
+        <h2>Certificates</h2>
+        <div class="form-group checkbox">
+          <label>
+            <input v-model="profileData.show_certificates" type="checkbox" @change="saveProfile" />
+            Show certificates section in portfolio
+          </label>
+        </div>
+        <CertificateList />
+      </div>
     </div>
   </div>
 </template>
@@ -374,6 +400,8 @@ import { useProfileStore } from "../../stores/profile";
 import ExperienceList from "../../components/admin/ExperienceList.vue";
 import EducationList from "../../components/admin/EducationList.vue";
 import ProjectList from "../../components/admin/ProjectList.vue";
+import TestimonialList from "../../components/admin/TestimonialList.vue";
+import CertificateList from "../../components/admin/CertificateList.vue";
 
 export default {
   name: "ProfileCMS",
@@ -381,6 +409,8 @@ export default {
     ExperienceList,
     EducationList,
     ProjectList,
+    TestimonialList,
+    CertificateList,
   },
   setup() {
     const profileStore = useProfileStore();

@@ -9,8 +9,8 @@
       <div class="about-wrapper">
         <div class="about-image-wrap reveal-left">
           <div class="about-img-frame">
-            <img v-if="profile?.about_image" :src="profile.about_image" alt="About photo" />
-            <img v-else-if="profile?.profile_image" :src="profile.profile_image" alt="About photo" />
+            <img v-if="profile?.about_image_url" :src="profile.about_image_url" alt="About photo" />
+            <img v-else-if="profile?.profile_image_url" :src="profile.profile_image_url" alt="About photo" />
             <div v-else class="about-img-placeholder">
               <span class="script">Ging</span>
             </div>

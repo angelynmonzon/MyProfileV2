@@ -11,6 +11,8 @@
         <a v-if="profile?.show_experience" href="#experience" @click.prevent="scrollTo('#experience')">Experience</a>
         <a v-if="profile?.show_education" href="#education" @click.prevent="scrollTo('#education')">Education</a>
         <a v-if="profile?.show_projects" href="#portfolio" @click.prevent="scrollTo('#portfolio')">Portfolio</a>
+        <a v-if="profile?.show_testimonials" href="#testimonials" @click.prevent="scrollTo('#testimonials')">Testimonials</a>
+        <a v-if="profile?.show_certificates" href="#certificates" @click.prevent="scrollTo('#certificates')">Certificates</a>
         <a href="#contact" @click.prevent="scrollTo('#contact')" class="nav-cta">Contact</a>
       </nav>
       <button class="hamburger" @click="menuOpen = !menuOpen" :class="{ active: menuOpen }">

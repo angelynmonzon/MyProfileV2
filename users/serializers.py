@@ -1,5 +1,5 @@
 from rest_framework import serializers
-from .models import User, Profile, Experience, Education, PortfolioProject, ProjectImage
+from .models import User, Profile, Experience, Education, PortfolioProject, ProjectImage, Testimonial, Certificate
 
 
 class UserSerializer(serializers.ModelSerializer):
@@ -127,10 +127,50 @@ class PortfolioProjectSerializer(serializers.ModelSerializer):
         return None
 
 
+class TestimonialSerializer(serializers.ModelSerializer):
+    image_url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Testimonial
+        fields = ['id', 'image', 'image_url', 'name', 'role', 'is_visible', 'created_at', 'updated_at']
+
+    def get_image_url(self, obj):
+        if obj.image:
+            url = obj.image.url
+            if url.startswith('http'):
+                return url
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(url)
+            return url
+        return None
+
+
+class CertificateSerializer(serializers.ModelSerializer):
+    image_url = serializers.SerializerMethodField()
+
+    class Meta:
+        model = Certificate
+        fields = ['id', 'image', 'image_url', 'title', 'issuer', 'date', 'is_visible', 'created_at', 'updated_at']
+
+    def get_image_url(self, obj):
+        if obj.image:
+            url = obj.image.url
+            if url.startswith('http'):
+                return url
+            request = self.context.get('request')
+            if request:
+                return request.build_absolute_uri(url)
+            return url
+        return None
+
+
 class ProfileSerializer(serializers.ModelSerializer):
     experiences = ExperienceSerializer(many=True, read_only=True)
     education = EducationSerializer(many=True, read_only=True)
     projects = PortfolioProjectSerializer(many=True, read_only=True)
+    testimonials = TestimonialSerializer(many=True, read_only=True)
+    certificates = CertificateSerializer(many=True, read_only=True)
     username = serializers.CharField(source='user.username', read_only=True)
     profile_image_url = serializers.SerializerMethodField()
     about_image_url = serializers.SerializerMethodField()
@@ -142,8 +182,8 @@ class ProfileSerializer(serializers.ModelSerializer):
             'email', 'phone', 'location', 'website_url',
             'linkedin_url', 'facebook_url', 'instagram_url', 'twitter_url', 'github_url',
             'services_offered', 'skills', 'is_available',
-            'show_services', 'show_skills', 'show_experience', 'show_education', 'show_projects',
-            'experiences', 'education', 'projects',
+            'show_services', 'show_skills', 'show_experience', 'show_education', 'show_projects', 'show_testimonials', 'show_certificates',
+            'experiences', 'education', 'projects', 'testimonials', 'certificates',
             'created_at', 'updated_at'
         ]
         read_only_fields = ['id', 'user', 'created_at', 'updated_at']
@@ -179,7 +219,7 @@ class ProfileCreateSerializer(serializers.ModelSerializer):
             'email', 'phone', 'location', 'website_url',
             'linkedin_url', 'facebook_url', 'instagram_url', 'twitter_url', 'github_url',
             'services_offered', 'skills', 'is_available',
-            'show_services', 'show_skills', 'show_experience', 'show_education', 'show_projects'
+            'show_services', 'show_skills', 'show_experience', 'show_education', 'show_projects', 'show_testimonials', 'show_certificates'
         ]
 
     def create(self, validated_data):
@@ -195,5 +235,5 @@ class ProfileUpdateSerializer(serializers.ModelSerializer):
             'email', 'phone', 'location', 'website_url',
             'linkedin_url', 'facebook_url', 'instagram_url', 'twitter_url', 'github_url',
             'services_offered', 'skills', 'is_available',
-            'show_services', 'show_skills', 'show_experience', 'show_education', 'show_projects'
+            'show_services', 'show_skills', 'show_experience', 'show_education', 'show_projects', 'show_testimonials', 'show_certificates'
         ]

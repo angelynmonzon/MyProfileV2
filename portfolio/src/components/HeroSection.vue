@@ -39,7 +39,7 @@
         <div class="hero-img-dots"></div>
         <div class="hero-img-accent"></div>
         <div class="hero-portrait">
-          <img v-if="profile?.profile_image" :src="profile.profile_image" alt="Profile photo" />
+          <img v-if="profile?.profile_image_url" :src="profile.profile_image_url" alt="Profile photo" />
           <div v-else class="portrait-placeholder">
             <span class="script">G</span>
           </div>

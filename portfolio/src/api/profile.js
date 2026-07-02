@@ -20,12 +20,22 @@ const normalizeProfile = (profile) => {
       ...p,
       image: stripMediaHost(p.image)
     })),
+    testimonials: (profile.testimonials || []).map(t => ({
+      ...t,
+      image: stripMediaHost(t.image)
+    })),
+    certificates: (profile.certificates || []).map(c => ({
+      ...c,
+      image: stripMediaHost(c.image)
+    })),
     // Ensure show flags are preserved
     show_services: profile.show_services !== undefined ? profile.show_services : true,
     show_skills: profile.show_skills !== undefined ? profile.show_skills : true,
     show_experience: profile.show_experience !== undefined ? profile.show_experience : true,
     show_education: profile.show_education !== undefined ? profile.show_education : true,
-    show_projects: profile.show_projects !== undefined ? profile.show_projects : true
+    show_projects: profile.show_projects !== undefined ? profile.show_projects : true,
+    show_testimonials: profile.show_testimonials !== undefined ? profile.show_testimonials : true,
+    show_certificates: profile.show_certificates !== undefined ? profile.show_certificates : true
   }
 }
 

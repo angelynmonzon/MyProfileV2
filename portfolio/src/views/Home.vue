@@ -12,6 +12,8 @@
       <ExperienceSection v-if="profile.show_experience" :profile="profile" />
       <EducationSection v-if="profile.show_education" :profile="profile" />
       <PortfolioSection v-if="profile.show_projects" :profile="profile" />
+      <TestimonialSection v-if="profile.show_testimonials" :profile="profile" />
+      <CertificateSection v-if="profile.show_certificates" :profile="profile" />
       <ContactSection :profile="profile" />
     </template>
   </div>
@@ -25,6 +27,8 @@ import SkillsSection from "../components/SkillsSection.vue";
 import ExperienceSection from "../components/ExperienceSection.vue";
 import EducationSection from "../components/EducationSection.vue";
 import PortfolioSection from "../components/PortfolioSection.vue";
+import TestimonialSection from "../components/TestimonialSection.vue";
+import CertificateSection from "../components/CertificateSection.vue";
 import ContactSection from "../components/ContactSection.vue";
 
 export default {
@@ -37,6 +41,8 @@ export default {
     ExperienceSection,
     EducationSection,
     PortfolioSection,
+    TestimonialSection,
+    CertificateSection,
     ContactSection,
   },
   props: ["profile", "loading"],
