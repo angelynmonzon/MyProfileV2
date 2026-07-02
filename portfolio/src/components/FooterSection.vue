@@ -12,7 +12,7 @@
         <p class="footer-copy">
           © {{ year }} {{ profile?.full_name || 'Angelyn Monzon' }}. All rights reserved.
         </p>
-        <a href="http://localhost:5173/login" target="_blank" class="admin-link">Admin</a>
+        <a href="/admin" target="_blank" class="admin-link">Admin</a>
       </div>
     </div>
   </footer>

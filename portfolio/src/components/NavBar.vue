@@ -82,6 +82,7 @@ export default {
 .nav-logo .script {
   font-family: 'Playlist-Script', cursive;
   font-size: 2rem;
+  margin-right: 1rem;
   color: var(--color-gold);
 }
 
