@@ -7,9 +7,15 @@
         <div class="divider"></div>
       </div>
       <div class="edu-grid">
-        <div v-for="(edu, i) in education" :key="i" class="edu-card reveal" :class="'reveal-delay-' + Math.min(i+1, 4)">
+        <div
+          v-for="(edu, i) in education"
+          :key="i"
+          class="edu-card reveal"
+          :class="'reveal-delay-' + Math.min(i + 1, 4)"
+        >
           <div class="edu-year">
-            {{ formatDate(edu.start_date) }} — {{ edu.is_current ? 'Present' : formatDate(edu.end_date) }}
+            {{ formatDate(edu.start_date) }} —
+            {{ edu.is_current ? "Present" : formatDate(edu.end_date) }}
           </div>
           <div class="edu-icon">🎓</div>
           <h3 class="edu-degree">{{ edu.degree }}</h3>
@@ -28,21 +34,23 @@
 
 <script>
 export default {
-  name: 'EducationSection',
-  props: ['profile'],
+  name: "EducationSection",
+  props: ["profile"],
   computed: {
     education() {
-      return this.profile?.education || []
-    }
+      return (this.profile?.education || []).filter(
+        (edu) => edu.is_visible !== false,
+      );
+    },
   },
   methods: {
     formatDate(dateString) {
-      if (!dateString) return ''
-      const d = new Date(dateString)
-      return d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
-    }
-  }
-}
+      if (!dateString) return "";
+      const d = new Date(dateString);
+      return d.toLocaleDateString("en-US", { month: "short", year: "numeric" });
+    },
+  },
+};
 </script>
 
 <style scoped>
@@ -58,7 +66,7 @@ export default {
 
 .edu-card {
   background: var(--color-dark-3);
-  border: 1px solid rgba(255,255,255,0.06);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 12px;
   padding: 2rem 1.5rem;
   text-align: center;
@@ -68,9 +76,11 @@ export default {
 }
 
 .edu-card::after {
-  content: '';
+  content: "";
   position: absolute;
-  bottom: 0; left: 0; right: 0;
+  bottom: 0;
+  left: 0;
+  right: 0;
   height: 3px;
   background: linear-gradient(90deg, var(--color-gold), #c9993a);
   transform: scaleX(0);
@@ -79,7 +89,7 @@ export default {
 
 .edu-card:hover {
   transform: translateY(-4px);
-  border-color: rgba(226,185,111,0.2);
+  border-color: rgba(226, 185, 111, 0.2);
 }
 
 .edu-card:hover::after {
@@ -117,7 +127,7 @@ export default {
 
 .edu-location {
   font-size: 0.82rem;
-  color: rgba(255,255,255,0.4);
+  color: rgba(255, 255, 255, 0.4);
   margin-bottom: 0.75rem;
 }
 
@@ -129,7 +139,7 @@ export default {
 
 .empty-state {
   text-align: center;
-  color: rgba(255,255,255,0.3);
+  color: rgba(255, 255, 255, 0.3);
   padding: 2rem;
   grid-column: 1 / -1;
 }

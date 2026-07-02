@@ -1,36 +1,110 @@
 <template>
   <div class="profile-cms">
     <h1>Profile Management</h1>
-    
+
     <div v-if="loading" class="loading">Loading...</div>
-    
+
     <div v-else-if="error" class="error">{{ error }}</div>
-    
+
     <div v-else class="profile-content">
+      <!-- Tabs -->
+      <div class="tabs">
+        <button
+          v-for="tab in [
+            'basic',
+            'social',
+            'services',
+            'skills',
+            'experience',
+            'education',
+            'projects',
+          ]"
+          :key="tab"
+          @click="activeTab = tab"
+          :class="['tab-button', { active: activeTab === tab }]"
+        >
+          {{ tab.charAt(0).toUpperCase() + tab.slice(1) }}
+        </button>
+      </div>
+
       <!-- Basic Profile Information -->
-      <div class="section">
+      <div v-show="activeTab === 'basic'" class="section">
         <h2>Basic Information</h2>
         <form @submit.prevent="saveProfile" class="profile-form">
           <div class="image-upload-row">
             <div class="form-group">
               <label>Hero Photo <small>(shown in hero section)</small></label>
               <div class="image-upload-box" @click="$refs.heroInput.click()">
-                <img v-if="heroPreview" :src="heroPreview" class="img-preview" alt="Hero preview" />
-                <img v-else-if="profileData.profile_image" :src="profileData.profile_image" class="img-preview" alt="Current hero" />
+                <img
+                  v-if="heroPreview"
+                  :src="heroPreview"
+                  class="img-preview"
+                  alt="Hero preview"
+                />
+                <img
+                  v-else-if="profileData.profile_image"
+                  :src="profileData.profile_image"
+                  class="img-preview"
+                  alt="Current hero"
+                />
                 <div v-else class="upload-placeholder">📷 Click to upload</div>
               </div>
-              <input ref="heroInput" type="file" accept="image/*" style="display:none" @change="onHeroChange" />
-              <button v-if="heroPreview" type="button" class="btn btn-danger btn-small" style="margin-top:0.4rem" @click="heroPreview=null; heroFile=null">Remove</button>
+              <input
+                ref="heroInput"
+                type="file"
+                accept="image/*"
+                style="display: none"
+                @change="onHeroChange"
+              />
+              <button
+                v-if="heroPreview"
+                type="button"
+                class="btn btn-danger btn-small"
+                style="margin-top: 0.4rem"
+                @click="
+                  heroPreview = null;
+                  heroFile = null;
+                "
+              >
+                Remove
+              </button>
             </div>
             <div class="form-group">
               <label>About Photo <small>(shown in about section)</small></label>
               <div class="image-upload-box" @click="$refs.aboutInput.click()">
-                <img v-if="aboutPreview" :src="aboutPreview" class="img-preview" alt="About preview" />
-                <img v-else-if="profileData.about_image" :src="profileData.about_image" class="img-preview" alt="Current about" />
+                <img
+                  v-if="aboutPreview"
+                  :src="aboutPreview"
+                  class="img-preview"
+                  alt="About preview"
+                />
+                <img
+                  v-else-if="profileData.about_image"
+                  :src="profileData.about_image"
+                  class="img-preview"
+                  alt="Current about"
+                />
                 <div v-else class="upload-placeholder">📷 Click to upload</div>
               </div>
-              <input ref="aboutInput" type="file" accept="image/*" style="display:none" @change="onAboutChange" />
-              <button v-if="aboutPreview" type="button" class="btn btn-danger btn-small" style="margin-top:0.4rem" @click="aboutPreview=null; aboutFile=null">Remove</button>
+              <input
+                ref="aboutInput"
+                type="file"
+                accept="image/*"
+                style="display: none"
+                @change="onAboutChange"
+              />
+              <button
+                v-if="aboutPreview"
+                type="button"
+                class="btn btn-danger btn-small"
+                style="margin-top: 0.4rem"
+                @click="
+                  aboutPreview = null;
+                  aboutFile = null;
+                "
+              >
+                Remove
+              </button>
             </div>
           </div>
           <div class="form-group">
@@ -39,15 +113,31 @@
           </div>
           <div class="form-group">
             <label>Professional Title</label>
-            <input v-model="profileData.title" type="text" placeholder="e.g., Virtual Assistant" required />
+            <input
+              v-model="profileData.title"
+              type="text"
+              placeholder="e.g., Virtual Assistant"
+              required
+            />
           </div>
           <div class="form-group">
-            <label>Hero Description <small>(shown on the landing page hero section)</small></label>
-            <textarea v-model="profileData.hero_description" rows="3" placeholder="Short tagline or intro shown below your name on the homepage"></textarea>
+            <label
+              >Hero Description
+              <small>(shown on the landing page hero section)</small></label
+            >
+            <textarea
+              v-model="profileData.hero_description"
+              rows="3"
+              placeholder="Short tagline or intro shown below your name on the homepage"
+            ></textarea>
           </div>
           <div class="form-group">
             <label>Bio <small>(shown on the About section)</small></label>
-            <textarea v-model="profileData.bio" rows="4" placeholder="Short professional biography"></textarea>
+            <textarea
+              v-model="profileData.bio"
+              rows="4"
+              placeholder="Short professional biography"
+            ></textarea>
           </div>
           <div class="form-group">
             <label>Email</label>
@@ -76,7 +166,7 @@
       </div>
 
       <!-- Social Media Links -->
-      <div class="section">
+      <div v-show="activeTab === 'social'" class="section">
         <h2>Social Media Links</h2>
         <form @submit.prevent="saveProfile" class="profile-form">
           <div class="form-group">
@@ -104,68 +194,174 @@
       </div>
 
       <!-- Services Offered -->
-      <div class="section">
+      <div v-show="activeTab === 'services'" class="section">
         <h2>Services Offered</h2>
+        <div class="form-group checkbox">
+          <label>
+            <input v-model="profileData.show_services" type="checkbox" />
+            Show services section in portfolio
+          </label>
+        </div>
         <div class="services-list">
-          <div v-for="(service, index) in profileData.services_offered" :key="index" class="service-item service-item-block">
+          <div
+            v-for="(service, index) in profileData.services_offered"
+            :key="index"
+            class="service-item service-item-block"
+          >
             <div class="service-item-fields">
               <div class="service-field">
                 <label>Icon</label>
-                <input v-model="service.icon" type="text" placeholder="e.g. 📱" style="width:70px" />
+                <input
+                  v-model="service.icon"
+                  type="text"
+                  placeholder="e.g. 📱"
+                  style="width: 70px"
+                />
               </div>
-              <div class="service-field" style="flex:1">
+              <div class="service-field" style="flex: 1">
                 <label>Title</label>
-                <input v-model="service.title" type="text" placeholder="Service title" />
+                <input
+                  v-model="service.title"
+                  type="text"
+                  placeholder="Service title"
+                />
+              </div>
+              <div class="service-field">
+                <label class="visibility-toggle">
+                  <input type="checkbox" v-model="service.is_visible" />
+                  <span>Show</span>
+                </label>
               </div>
             </div>
             <div class="service-field">
               <label>Description</label>
-              <textarea v-model="service.description" rows="2" placeholder="What this service includes..."></textarea>
+              <textarea
+                v-model="service.description"
+                rows="2"
+                placeholder="What this service includes..."
+              ></textarea>
             </div>
-            <button @click="removeService(index)" class="btn btn-danger btn-small">Remove</button>
+            <button
+              @click="removeService(index)"
+              class="btn btn-danger btn-small"
+            >
+              Remove
+            </button>
           </div>
-          <button @click="addService" class="btn btn-secondary">+ Add Service</button>
+          <button @click="addService" class="btn btn-secondary">
+            + Add Service
+          </button>
         </div>
-        <button @click="saveProfile" class="btn btn-primary">Save Services</button>
+        <button @click="saveProfile" class="btn btn-primary">
+          Save Services
+        </button>
       </div>
 
       <!-- Skills -->
-      <div class="section">
+      <div v-show="activeTab === 'skills'" class="section">
         <h2>Skills</h2>
+        <div class="form-group checkbox">
+          <label>
+            <input v-model="profileData.show_skills" type="checkbox" />
+            Show skills section in portfolio
+          </label>
+        </div>
         <div class="skill-categories">
-          <div v-for="(group, gi) in profileData.skills" :key="gi" class="skill-category-block">
+          <div
+            v-for="(group, gi) in profileData.skills"
+            :key="gi"
+            class="skill-category-block"
+          >
             <div class="skill-category-header">
-              <input v-model="group.category" type="text" placeholder="Category name (e.g. Social Media)" class="category-name-input" />
-              <button @click="removeSkillGroup(gi)" class="btn btn-danger btn-small">Remove Group</button>
+              <input
+                v-model="group.category"
+                type="text"
+                placeholder="Category name (e.g. Social Media)"
+                class="category-name-input"
+              />
+              <button
+                @click="removeSkillGroup(gi)"
+                class="btn btn-danger btn-small"
+              >
+                Remove Group
+              </button>
             </div>
             <div class="skill-tags-editor">
-              <div v-for="(skill, si) in group.skills" :key="si" class="skill-tag-item">
-                <input v-model="group.skills[si]" type="text" placeholder="Skill" />
-                <button @click="removeSkillItem(gi, si)" class="btn btn-danger btn-small">&times;</button>
+              <div
+                v-for="(skill, si) in group.skills"
+                :key="si"
+                class="skill-tag-item"
+              >
+                <input v-model="skill.name" type="text" placeholder="Skill" />
+                <label class="visibility-toggle">
+                  <input type="checkbox" v-model="skill.is_visible" />
+                  <span>Show</span>
+                </label>
+                <button
+                  @click="removeSkillItem(gi, si)"
+                  class="btn btn-danger btn-small"
+                >
+                  &times;
+                </button>
               </div>
-              <button @click="addSkillItem(gi)" class="btn btn-secondary btn-small">+ Add Skill</button>
+              <button
+                @click="addSkillItem(gi)"
+                class="btn btn-secondary btn-small"
+              >
+                + Add Skill
+              </button>
             </div>
           </div>
         </div>
-        <button @click="addSkillGroup" class="btn btn-secondary" style="margin-top:0.75rem">+ Add Category</button>
-        <button @click="saveProfile" class="btn btn-primary" style="margin-left:0.5rem">Save Skills</button>
+        <button
+          @click="addSkillGroup"
+          class="btn btn-secondary"
+          style="margin-top: 0.75rem"
+        >
+          + Add Category
+        </button>
+        <button
+          @click="saveProfile"
+          class="btn btn-primary"
+          style="margin-left: 0.5rem"
+        >
+          Save Skills
+        </button>
       </div>
 
       <!-- Work Experience -->
-      <div class="section">
+      <div v-show="activeTab === 'experience'" class="section">
         <h2>Work Experience</h2>
+        <div class="form-group checkbox">
+          <label>
+            <input v-model="profileData.show_experience" type="checkbox" />
+            Show work experience section in portfolio
+          </label>
+        </div>
         <ExperienceList />
       </div>
 
       <!-- Education -->
-      <div class="section">
+      <div v-show="activeTab === 'education'" class="section">
         <h2>Education</h2>
+        <div class="form-group checkbox">
+          <label>
+            <input v-model="profileData.show_education" type="checkbox" />
+            Show education section in portfolio
+          </label>
+        </div>
         <EducationList />
       </div>
 
       <!-- Portfolio Projects -->
-      <div class="section">
+      <div v-show="activeTab === 'projects'" class="section">
         <h2>Portfolio Projects</h2>
+        <div class="form-group checkbox">
+          <label>
+            <input v-model="profileData.show_projects" type="checkbox" />
+            Show portfolio projects section in portfolio
+          </label>
+        </div>
         <ProjectList />
       </div>
     </div>
@@ -173,181 +369,222 @@
 </template>
 
 <script>
-import { ref, onMounted, reactive } from 'vue'
-import { useProfileStore } from '../stores/profile'
-import ExperienceList from '../components/ExperienceList.vue'
-import EducationList from '../components/EducationList.vue'
-import ProjectList from '../components/ProjectList.vue'
+import { ref, onMounted, reactive } from "vue";
+import { useProfileStore } from "../stores/profile";
+import ExperienceList from "../components/ExperienceList.vue";
+import EducationList from "../components/EducationList.vue";
+import ProjectList from "../components/ProjectList.vue";
 
 export default {
-  name: 'ProfileCMS',
+  name: "ProfileCMS",
   components: {
     ExperienceList,
     EducationList,
-    ProjectList
+    ProjectList,
   },
   setup() {
-    const profileStore = useProfileStore()
-    
-    const stripMediaHost = (url) => url ? url.replace(/^https?:\/\/[^/]+/, '') : null
+    const profileStore = useProfileStore();
 
-    const heroFile = ref(null)
-    const heroPreview = ref(null)
-    const aboutFile = ref(null)
-    const aboutPreview = ref(null)
+    const stripMediaHost = (url) =>
+      url ? url.replace(/^https?:\/\/[^/]+/, "") : null;
+
+    const heroFile = ref(null);
+    const heroPreview = ref(null);
+    const aboutFile = ref(null);
+    const aboutPreview = ref(null);
 
     const onHeroChange = (e) => {
-      const file = e.target.files[0]
-      if (!file) return
-      heroFile.value = file
-      heroPreview.value = URL.createObjectURL(file)
-    }
+      const file = e.target.files[0];
+      if (!file) return;
+      heroFile.value = file;
+      heroPreview.value = URL.createObjectURL(file);
+    };
 
     const onAboutChange = (e) => {
-      const file = e.target.files[0]
-      if (!file) return
-      aboutFile.value = file
-      aboutPreview.value = URL.createObjectURL(file)
-    }
+      const file = e.target.files[0];
+      if (!file) return;
+      aboutFile.value = file;
+      aboutPreview.value = URL.createObjectURL(file);
+    };
 
     const profileData = ref({
       profile_image: null,
       about_image: null,
-      full_name: '',
-      title: '',
-      hero_description: '',
-      bio: '',
-      email: '',
-      phone: '',
-      location: '',
-      website_url: '',
-      linkedin_url: '',
-      facebook_url: '',
-      instagram_url: '',
-      twitter_url: '',
-      github_url: '',
+      full_name: "",
+      title: "",
+      hero_description: "",
+      bio: "",
+      email: "",
+      phone: "",
+      location: "",
+      website_url: "",
+      linkedin_url: "",
+      facebook_url: "",
+      instagram_url: "",
+      twitter_url: "",
+      github_url: "",
       services_offered: [],
       skills: [],
-      is_available: true
-    })
+      is_available: true,
+      show_services: true,
+      show_skills: true,
+      show_experience: true,
+      show_education: true,
+      show_projects: true,
+    });
 
-    const loading = ref(false)
-    const error = ref(null)
+    const activeTab = ref("basic");
+
+    const loading = ref(false);
+    const error = ref(null);
 
     const loadProfile = async () => {
-      loading.value = true
-      error.value = null
+      loading.value = true;
+      error.value = null;
       try {
-        const data = await profileStore.fetchMyProfile()
+        console.log("Fetching profile...");
+        const data = await profileStore.fetchMyProfile();
+        console.log("Profile data received:", data);
         if (data) {
           profileData.value = {
-            profile_image: stripMediaHost(data.profile_image) || null,
-            about_image: stripMediaHost(data.about_image) || null,
-            full_name: data.full_name || '',
-            title: data.title || '',
-            hero_description: data.hero_description || '',
-            bio: data.bio || '',
-            email: data.email || '',
-            phone: data.phone || '',
-            location: data.location || '',
-            website_url: data.website_url || '',
-            linkedin_url: data.linkedin_url || '',
-            facebook_url: data.facebook_url || '',
-            instagram_url: data.instagram_url || '',
-            twitter_url: data.twitter_url || '',
-            github_url: data.github_url || '',
+            profile_image:
+              data.profile_image_url ||
+              stripMediaHost(data.profile_image) ||
+              null,
+            about_image:
+              data.about_image_url || stripMediaHost(data.about_image) || null,
+            full_name: data.full_name || "",
+            title: data.title || "",
+            hero_description: data.hero_description || "",
+            bio: data.bio || "",
+            email: data.email || "",
+            phone: data.phone || "",
+            location: data.location || "",
+            website_url: data.website_url || "",
+            linkedin_url: data.linkedin_url || "",
+            facebook_url: data.facebook_url || "",
+            instagram_url: data.instagram_url || "",
+            twitter_url: data.twitter_url || "",
+            github_url: data.github_url || "",
             services_offered: data.services_offered || [],
             skills: data.skills || [],
-            is_available: data.is_available !== undefined ? data.is_available : true
-          }
+            is_available:
+              data.is_available !== undefined ? data.is_available : true,
+            show_services:
+              data.show_services !== undefined ? data.show_services : true,
+            show_skills:
+              data.show_skills !== undefined ? data.show_skills : true,
+            show_experience:
+              data.show_experience !== undefined ? data.show_experience : true,
+            show_education:
+              data.show_education !== undefined ? data.show_education : true,
+            show_projects:
+              data.show_projects !== undefined ? data.show_projects : true,
+          };
+          console.log("Profile data set:", profileData.value);
         }
       } catch (err) {
+        console.error("Load profile error:", err);
         if (err.response?.status === 404) {
           // Profile doesn't exist yet, that's okay
-          error.value = null
+          error.value = null;
         } else {
-          error.value = err.message || 'Failed to load profile'
+          error.value = err.message || "Failed to load profile";
         }
       } finally {
-        loading.value = false
+        loading.value = false;
       }
-    }
+    };
 
     const saveProfile = async () => {
-      loading.value = true
-      error.value = null
+      loading.value = true;
+      error.value = null;
       try {
-        const hasImage = heroFile.value || aboutFile.value
-        const imageKeys = ['profile_image', 'about_image']
+        const hasImage = heroFile.value || aboutFile.value;
+        const imageKeys = ["profile_image", "about_image"];
         if (hasImage) {
-          const fd = new FormData()
+          const fd = new FormData();
           Object.entries(profileData.value).forEach(([k, v]) => {
-            if (imageKeys.includes(k)) return
-            if (v === null || v === undefined) return
-            fd.append(k, typeof v === 'object' ? JSON.stringify(v) : v)
-          })
-          if (heroFile.value) fd.append('profile_image', heroFile.value)
-          if (aboutFile.value) fd.append('about_image', aboutFile.value)
-          await profileStore.updateProfileForm(fd)
+            if (imageKeys.includes(k)) return;
+            if (v === null || v === undefined) return;
+            fd.append(k, typeof v === "object" ? JSON.stringify(v) : v);
+          });
+          if (heroFile.value) fd.append("profile_image", heroFile.value);
+          if (aboutFile.value) fd.append("about_image", aboutFile.value);
+          await profileStore.updateProfileForm(fd);
         } else {
           const payload = Object.fromEntries(
-            Object.entries(profileData.value).filter(([k]) => !imageKeys.includes(k))
-          )
+            Object.entries(profileData.value).filter(
+              ([k]) => !imageKeys.includes(k),
+            ),
+          );
           if (profileStore.profile?.id) {
-            await profileStore.updateProfile(payload)
+            await profileStore.updateProfile(payload);
           } else {
-            await profileStore.createProfile(payload)
+            await profileStore.createProfile(payload);
           }
         }
-        heroFile.value = null
-        heroPreview.value = null
-        aboutFile.value = null
-        aboutPreview.value = null
-        alert('Profile saved successfully!')
+        heroFile.value = null;
+        heroPreview.value = null;
+        aboutFile.value = null;
+        aboutPreview.value = null;
+        alert("Profile saved successfully!");
       } catch (err) {
-        const detail = err.response?.data
-        const msg = typeof detail === 'object'
-          ? Object.entries(detail).map(([k, v]) => `${k}: ${Array.isArray(v) ? v.join(', ') : v}`).join('\n')
-          : (err.message || 'Failed to save profile')
-        error.value = msg
-        alert('Failed to save profile:\n' + msg)
+        const detail = err.response?.data;
+        const msg =
+          typeof detail === "object"
+            ? Object.entries(detail)
+                .map(([k, v]) => `${k}: ${Array.isArray(v) ? v.join(", ") : v}`)
+                .join("\n")
+            : err.message || "Failed to save profile";
+        error.value = msg;
+        alert("Failed to save profile:\n" + msg);
       } finally {
-        loading.value = false
+        loading.value = false;
       }
-    }
+    };
 
     const addService = () => {
-      profileData.value.services_offered.push({ icon: '', title: '', description: '' })
-    }
+      profileData.value.services_offered.push({
+        icon: "",
+        title: "",
+        description: "",
+        is_visible: true,
+      });
+    };
 
     const removeService = (index) => {
-      profileData.value.services_offered.splice(index, 1)
-    }
+      profileData.value.services_offered.splice(index, 1);
+    };
 
     const addSkillGroup = () => {
-      profileData.value.skills.push({ category: '', skills: [] })
-    }
+      profileData.value.skills.push({ category: "", skills: [] });
+    };
 
     const removeSkillGroup = (gi) => {
-      profileData.value.skills.splice(gi, 1)
-    }
+      profileData.value.skills.splice(gi, 1);
+    };
 
     const addSkillItem = (gi) => {
-      profileData.value.skills[gi].skills.push('')
-    }
+      profileData.value.skills[gi].skills.push({ name: "", is_visible: true });
+    };
 
     const removeSkillItem = (gi, si) => {
-      profileData.value.skills[gi].skills.splice(si, 1)
-    }
+      profileData.value.skills[gi].skills.splice(si, 1);
+    };
 
     onMounted(() => {
-      loadProfile()
-    })
+      loadProfile();
+    });
 
     return {
       profileData,
-      heroFile, heroPreview, onHeroChange,
-      aboutFile, aboutPreview, onAboutChange,
+      heroFile,
+      heroPreview,
+      onHeroChange,
+      aboutFile,
+      aboutPreview,
+      onAboutChange,
       loading,
       error,
       saveProfile,
@@ -356,16 +593,50 @@ export default {
       addSkillGroup,
       removeSkillGroup,
       addSkillItem,
-      removeSkillItem
-    }
-  }
-}
+      removeSkillItem,
+      activeTab,
+    };
+  },
+};
 </script>
 
 <style scoped>
 .profile-cms {
   max-width: 900px;
   margin: 0 auto;
+}
+
+.tabs {
+  display: flex;
+  gap: 0.5rem;
+  margin-bottom: 1.5rem;
+  border-bottom: 2px solid #e0e0e0;
+  padding-bottom: 0.5rem;
+  overflow-x: auto;
+}
+
+.tab-button {
+  padding: 0.75rem 1.25rem;
+  border: none;
+  background: none;
+  cursor: pointer;
+  font-size: 0.95rem;
+  font-weight: 500;
+  color: #7f8c8d;
+  border-radius: 4px 4px 0 0;
+  transition: all 0.2s;
+  white-space: nowrap;
+}
+
+.tab-button:hover {
+  background: #f5f5f5;
+  color: #3498db;
+}
+
+.tab-button.active {
+  background: #3498db;
+  color: white;
+  font-weight: 600;
 }
 
 .image-upload-row {
@@ -425,7 +696,7 @@ h2 {
   padding: 2rem;
   margin-bottom: 2rem;
   border-radius: 8px;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 }
 
 .profile-form {

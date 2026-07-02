@@ -1,30 +1,64 @@
 <template>
   <div class="experience-list">
     <div v-if="loading" class="loading">Loading experiences...</div>
-    
+
     <div v-else>
-      <div v-for="experience in experiences" :key="experience.id" class="experience-item">
+      <div
+        v-for="experience in experiences"
+        :key="experience.id"
+        class="experience-item"
+      >
         <div class="experience-header">
           <h3>{{ experience.job_title }} at {{ experience.company }}</h3>
           <div class="experience-actions">
-            <button @click="editExperience(experience)" class="btn btn-small btn-secondary">Edit</button>
-            <button @click="deleteExperience(experience.id)" class="btn btn-small btn-danger">Delete</button>
+            <label class="visibility-toggle">
+              <input
+                type="checkbox"
+                v-model="experience.is_visible"
+                @change="toggleVisibility(experience)"
+              />
+              <span>Show</span>
+            </label>
+            <button
+              @click="editExperience(experience)"
+              class="btn btn-small btn-secondary"
+            >
+              Edit
+            </button>
+            <button
+              @click="deleteExperience(experience.id)"
+              class="btn btn-small btn-danger"
+            >
+              Delete
+            </button>
           </div>
         </div>
         <div class="experience-details">
-          <p><strong>Location:</strong> {{ experience.location || 'Not specified' }}</p>
-          <p><strong>Period:</strong> {{ formatDate(experience.start_date) }} - {{ experience.is_current ? 'Present' : formatDate(experience.end_date) }}</p>
+          <p>
+            <strong>Location:</strong>
+            {{ experience.location || "Not specified" }}
+          </p>
+          <p>
+            <strong>Period:</strong> {{ formatDate(experience.start_date) }} -
+            {{
+              experience.is_current
+                ? "Present"
+                : formatDate(experience.end_date)
+            }}
+          </p>
           <p><strong>Description:</strong> {{ experience.description }}</p>
         </div>
       </div>
-      
-      <button @click="showForm = true" class="btn btn-primary">Add Experience</button>
+
+      <button @click="showForm = true" class="btn btn-primary">
+        Add Experience
+      </button>
     </div>
 
     <!-- Experience Form Modal -->
     <div v-if="showForm" class="modal">
       <div class="modal-content">
-        <h2>{{ editingExperience ? 'Edit Experience' : 'Add Experience' }}</h2>
+        <h2>{{ editingExperience ? "Edit Experience" : "Add Experience" }}</h2>
         <form @submit.prevent="saveExperience" class="experience-form">
           <div class="form-group">
             <label>Job Title</label>
@@ -44,7 +78,11 @@
           </div>
           <div class="form-group">
             <label>End Date</label>
-            <input v-model="formData.end_date" type="date" :disabled="formData.is_current" />
+            <input
+              v-model="formData.end_date"
+              type="date"
+              :disabled="formData.is_current"
+            />
           </div>
           <div class="form-group checkbox">
             <label>
@@ -54,11 +92,23 @@
           </div>
           <div class="form-group">
             <label>Description</label>
-            <textarea v-model="formData.description" rows="4" required></textarea>
+            <textarea
+              v-model="formData.description"
+              rows="4"
+              required
+            ></textarea>
+          </div>
+          <div class="form-group checkbox">
+            <label>
+              <input v-model="formData.is_visible" type="checkbox" />
+              Show in portfolio
+            </label>
           </div>
           <div class="form-actions">
             <button type="submit" class="btn btn-primary">Save</button>
-            <button type="button" @click="closeForm" class="btn btn-secondary">Cancel</button>
+            <button type="button" @click="closeForm" class="btn btn-secondary">
+              Cancel
+            </button>
           </div>
         </form>
       </div>
@@ -67,57 +117,64 @@
 </template>
 
 <script>
-import { ref, onMounted } from 'vue'
-import { useProfileStore } from '../stores/profile'
+import { ref, onMounted } from "vue";
+import { useProfileStore } from "../stores/profile";
 
 export default {
-  name: 'ExperienceList',
+  name: "ExperienceList",
   setup() {
-    const profileStore = useProfileStore()
-    
-    const experiences = ref([])
-    const loading = ref(false)
-    const showForm = ref(false)
-    const editingExperience = ref(null)
-    
+    const profileStore = useProfileStore();
+
+    const experiences = ref([]);
+    const loading = ref(false);
+    const showForm = ref(false);
+    const editingExperience = ref(null);
+
     const formData = ref({
-      job_title: '',
-      company: '',
-      location: '',
-      start_date: '',
-      end_date: '',
+      job_title: "",
+      company: "",
+      location: "",
+      start_date: "",
+      end_date: "",
       is_current: false,
-      description: ''
-    })
+      description: "",
+      is_visible: true,
+    });
 
     const loadExperiences = async () => {
-      loading.value = true
+      loading.value = true;
       try {
-        await profileStore.fetchExperiences()
-        experiences.value = profileStore.experiences
+        await profileStore.fetchExperiences();
+        experiences.value = profileStore.experiences;
       } catch (err) {
-        console.error('Failed to load experiences:', err)
+        console.error("Failed to load experiences:", err);
       } finally {
-        loading.value = false
+        loading.value = false;
       }
-    }
+    };
 
     const saveExperience = async () => {
       try {
         if (editingExperience.value) {
-          await profileStore.updateExperience(editingExperience.value.id, formData.value)
+          await profileStore.updateExperience(
+            editingExperience.value.id,
+            formData.value,
+          );
         } else {
-          await profileStore.createExperience(formData.value)
+          await profileStore.createExperience(formData.value);
         }
-        closeForm()
-        loadExperiences()
+        closeForm();
+        loadExperiences();
       } catch (err) {
-        alert('Failed to save experience: ' + (err.response?.data?.detail || err.message))
+        alert(
+          "Failed to save experience: " +
+            (err.response?.data?.detail || err.message),
+        );
       }
-    }
+    };
 
     const editExperience = (experience) => {
-      editingExperience.value = experience
+      editingExperience.value = experience;
       formData.value = {
         job_title: experience.job_title,
         company: experience.company,
@@ -125,45 +182,68 @@ export default {
         start_date: experience.start_date,
         end_date: experience.end_date,
         is_current: experience.is_current,
-        description: experience.description
-      }
-      showForm.value = true
-    }
+        description: experience.description,
+        is_visible:
+          experience.is_visible !== undefined ? experience.is_visible : true,
+      };
+      showForm.value = true;
+    };
 
     const deleteExperience = async (id) => {
-      if (confirm('Are you sure you want to delete this experience?')) {
+      if (confirm("Are you sure you want to delete this experience?")) {
         try {
-          await profileStore.deleteExperience(id)
-          loadExperiences()
+          await profileStore.deleteExperience(id);
+          loadExperiences();
         } catch (err) {
-          alert('Failed to delete experience: ' + (err.response?.data?.detail || err.message))
+          alert(
+            "Failed to delete experience: " +
+              (err.response?.data?.detail || err.message),
+          );
         }
       }
-    }
+    };
 
     const closeForm = () => {
-      showForm.value = false
-      editingExperience.value = null
+      showForm.value = false;
+      editingExperience.value = null;
       formData.value = {
-        job_title: '',
-        company: '',
-        location: '',
-        start_date: '',
-        end_date: '',
+        job_title: "",
+        company: "",
+        location: "",
+        start_date: "",
+        end_date: "",
         is_current: false,
-        description: ''
+        description: "",
+        is_visible: true,
+      };
+    };
+
+    const toggleVisibility = async (experience) => {
+      try {
+        await profileStore.updateExperience(experience.id, {
+          is_visible: experience.is_visible,
+        });
+      } catch (err) {
+        alert(
+          "Failed to update visibility: " +
+            (err.response?.data?.detail || err.message),
+        );
+        experience.is_visible = !experience.is_visible;
       }
-    }
+    };
 
     const formatDate = (dateString) => {
-      if (!dateString) return 'Not specified'
-      const date = new Date(dateString)
-      return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
-    }
+      if (!dateString) return "Not specified";
+      const date = new Date(dateString);
+      return date.toLocaleDateString("en-US", {
+        month: "long",
+        year: "numeric",
+      });
+    };
 
     onMounted(() => {
-      loadExperiences()
-    })
+      loadExperiences();
+    });
 
     return {
       experiences,
@@ -175,10 +255,11 @@ export default {
       editExperience,
       deleteExperience,
       closeForm,
-      formatDate
-    }
-  }
-}
+      formatDate,
+      toggleVisibility,
+    };
+  },
+};
 </script>
 
 <style scoped>
@@ -210,6 +291,20 @@ export default {
 .experience-actions {
   display: flex;
   gap: 0.5rem;
+  align-items: center;
+}
+
+.visibility-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.85rem;
+  color: #555;
+  cursor: pointer;
+}
+
+.visibility-toggle input {
+  width: auto;
 }
 
 .experience-details p {
@@ -228,7 +323,7 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;

@@ -7,11 +7,11 @@ from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate
 from django.views.decorators.csrf import csrf_exempt
 from django.utils.decorators import method_decorator
-from .models import User, Profile, Experience, Education, PortfolioProject
+from .models import User, Profile, Experience, Education, PortfolioProject, ProjectImage
 from .serializers import (
     UserSerializer, UserCreateSerializer, UserUpdateSerializer,
     ProfileSerializer, ProfileCreateSerializer, ProfileUpdateSerializer,
-    ExperienceSerializer, EducationSerializer, PortfolioProjectSerializer
+    ExperienceSerializer, EducationSerializer, PortfolioProjectSerializer, ProjectImageSerializer
 )
 from .permissions import IsSuperAdmin, IsSuperAdminOrReadOnly
 
@@ -160,16 +160,10 @@ class ProfileViewSet(viewsets.ModelViewSet):
 
     @action(detail=False, methods=['get'])
     def my_profile(self, request):
-        """Get the current user's profile"""
-        try:
-            profile = request.user.profile
-            serializer = ProfileSerializer(profile)
-            return Response(serializer.data)
-        except Profile.DoesNotExist:
-            return Response(
-                {'detail': 'Profile not found. Create a profile first.'},
-                status=status.HTTP_404_NOT_FOUND
-            )
+        """Get the current user's profile (auto-creates if missing)"""
+        profile, created = Profile.objects.get_or_create(user=request.user)
+        serializer = ProfileSerializer(profile)
+        return Response(serializer.data)
 
     @action(detail=False, methods=['get'])
     def public(self, request):
@@ -237,3 +231,29 @@ class PortfolioProjectViewSet(viewsets.ModelViewSet):
     def perform_create(self, serializer):
         profile, created = Profile.objects.get_or_create(user=self.request.user)
         serializer.save(profile=profile)
+
+
+class ProjectImageViewSet(viewsets.ModelViewSet):
+    """
+    ViewSet for ProjectImage model.
+    - Users can manage images for their own projects
+    - SuperAdmin can manage all project images
+    """
+    serializer_class = ProjectImageSerializer
+    permission_classes = [IsAuthenticated]
+
+    def get_queryset(self):
+        if self.request.user.is_superadmin():
+            return ProjectImage.objects.all()
+        return ProjectImage.objects.filter(project__profile__user=self.request.user)
+
+    def perform_create(self, serializer):
+        project_id = self.request.data.get('project')
+        if project_id:
+            try:
+                project = PortfolioProject.objects.get(id=project_id)
+                serializer.save(project=project)
+            except PortfolioProject.DoesNotExist:
+                raise serializers.ValidationError("Invalid project ID")
+        else:
+            raise serializers.ValidationError("Project ID is required")

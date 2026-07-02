@@ -3,7 +3,7 @@ from django.views.decorators.csrf import csrf_exempt
 from rest_framework.routers import DefaultRouter
 from .views import (
     UserViewSet, LoginView, ProfileViewSet, ExperienceViewSet,
-    EducationViewSet, PortfolioProjectViewSet
+    EducationViewSet, PortfolioProjectViewSet, ProjectImageViewSet
 )
 
 router = DefaultRouter()
@@ -12,6 +12,7 @@ router.register(r'profiles', ProfileViewSet, basename='profile')
 router.register(r'experiences', ExperienceViewSet, basename='experience')
 router.register(r'education', EducationViewSet, basename='education')
 router.register(r'projects', PortfolioProjectViewSet, basename='project')
+router.register(r'project-images', ProjectImageViewSet, basename='project-image')
 
 urlpatterns = [
     path('', include(router.urls)),

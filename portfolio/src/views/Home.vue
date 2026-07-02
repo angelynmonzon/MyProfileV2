@@ -7,28 +7,28 @@
     <template v-else>
       <HeroSection :profile="profile" />
       <AboutSection :profile="profile" />
-      <ServicesSection :profile="profile" />
-      <SkillsSection :profile="profile" />
-      <ExperienceSection :profile="profile" />
-      <EducationSection :profile="profile" />
-      <PortfolioSection :profile="profile" />
+      <ServicesSection v-if="profile.show_services" :profile="profile" />
+      <SkillsSection v-if="profile.show_skills" :profile="profile" />
+      <ExperienceSection v-if="profile.show_experience" :profile="profile" />
+      <EducationSection v-if="profile.show_education" :profile="profile" />
+      <PortfolioSection v-if="profile.show_projects" :profile="profile" />
       <ContactSection :profile="profile" />
     </template>
   </div>
 </template>
 
 <script>
-import HeroSection from '../components/HeroSection.vue'
-import AboutSection from '../components/AboutSection.vue'
-import ServicesSection from '../components/ServicesSection.vue'
-import SkillsSection from '../components/SkillsSection.vue'
-import ExperienceSection from '../components/ExperienceSection.vue'
-import EducationSection from '../components/EducationSection.vue'
-import PortfolioSection from '../components/PortfolioSection.vue'
-import ContactSection from '../components/ContactSection.vue'
+import HeroSection from "../components/HeroSection.vue";
+import AboutSection from "../components/AboutSection.vue";
+import ServicesSection from "../components/ServicesSection.vue";
+import SkillsSection from "../components/SkillsSection.vue";
+import ExperienceSection from "../components/ExperienceSection.vue";
+import EducationSection from "../components/EducationSection.vue";
+import PortfolioSection from "../components/PortfolioSection.vue";
+import ContactSection from "../components/ContactSection.vue";
 
 export default {
-  name: 'Home',
+  name: "Home",
   components: {
     HeroSection,
     AboutSection,
@@ -37,10 +37,10 @@ export default {
     ExperienceSection,
     EducationSection,
     PortfolioSection,
-    ContactSection
+    ContactSection,
   },
-  props: ['profile', 'loading']
-}
+  props: ["profile", "loading"],
+};
 </script>
 
 <style scoped>
@@ -56,18 +56,20 @@ export default {
 .loader-ring {
   width: 50px;
   height: 50px;
-  border: 3px solid rgba(226,185,111,0.15);
+  border: 3px solid rgba(226, 185, 111, 0.15);
   border-top-color: var(--color-gold);
   border-radius: 50%;
   animation: spin 0.8s linear infinite;
 }
 
 @keyframes spin {
-  to { transform: rotate(360deg); }
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 .page-loader .script {
-  font-family: 'Playlist-Script', cursive;
+  font-family: "Playlist-Script", cursive;
   font-size: 1.8rem;
   color: var(--color-gold);
   opacity: 0.7;

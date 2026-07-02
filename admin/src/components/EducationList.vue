@@ -1,38 +1,75 @@
 <template>
   <div class="education-list">
     <div v-if="loading" class="loading">Loading education...</div>
-    
+
     <div v-else>
       <div v-for="edu in education" :key="edu.id" class="education-item">
         <div class="education-header">
           <h3>{{ edu.degree }} from {{ edu.institution }}</h3>
           <div class="education-actions">
-            <button @click="editEducation(edu)" class="btn btn-small btn-secondary">Edit</button>
-            <button @click="deleteEducation(edu.id)" class="btn btn-small btn-danger">Delete</button>
+            <label class="visibility-toggle">
+              <input
+                type="checkbox"
+                v-model="edu.is_visible"
+                @change="toggleVisibility(edu)"
+              />
+              <span>Show</span>
+            </label>
+            <button
+              @click="editEducation(edu)"
+              class="btn btn-small btn-secondary"
+            >
+              Edit
+            </button>
+            <button
+              @click="deleteEducation(edu.id)"
+              class="btn btn-small btn-danger"
+            >
+              Delete
+            </button>
           </div>
         </div>
         <div class="education-details">
-          <p><strong>Location:</strong> {{ edu.location || 'Not specified' }}</p>
-          <p><strong>Period:</strong> {{ formatDate(edu.start_date) }} - {{ edu.is_current ? 'Present' : formatDate(edu.end_date) }}</p>
-          <p v-if="edu.description"><strong>Description:</strong> {{ edu.description }}</p>
+          <p>
+            <strong>Location:</strong> {{ edu.location || "Not specified" }}
+          </p>
+          <p>
+            <strong>Period:</strong> {{ formatDate(edu.start_date) }} -
+            {{ edu.is_current ? "Present" : formatDate(edu.end_date) }}
+          </p>
+          <p v-if="edu.description">
+            <strong>Description:</strong> {{ edu.description }}
+          </p>
         </div>
       </div>
-      
-      <button @click="showForm = true" class="btn btn-primary">Add Education</button>
+
+      <button @click="showForm = true" class="btn btn-primary">
+        Add Education
+      </button>
     </div>
 
     <!-- Education Form Modal -->
     <div v-if="showForm" class="modal">
       <div class="modal-content">
-        <h2>{{ editingEducation ? 'Edit Education' : 'Add Education' }}</h2>
+        <h2>{{ editingEducation ? "Edit Education" : "Add Education" }}</h2>
         <form @submit.prevent="saveEducation" class="education-form">
           <div class="form-group">
             <label>Degree</label>
-            <input v-model="formData.degree" type="text" required placeholder="e.g., Bachelor of Science in Computer Science" />
+            <input
+              v-model="formData.degree"
+              type="text"
+              required
+              placeholder="e.g., Bachelor of Science in Computer Science"
+            />
           </div>
           <div class="form-group">
             <label>Institution</label>
-            <input v-model="formData.institution" type="text" required placeholder="e.g., University of Example" />
+            <input
+              v-model="formData.institution"
+              type="text"
+              required
+              placeholder="e.g., University of Example"
+            />
           </div>
           <div class="form-group">
             <label>Location</label>
@@ -44,7 +81,11 @@
           </div>
           <div class="form-group">
             <label>End Date</label>
-            <input v-model="formData.end_date" type="date" :disabled="formData.is_current" />
+            <input
+              v-model="formData.end_date"
+              type="date"
+              :disabled="formData.is_current"
+            />
           </div>
           <div class="form-group checkbox">
             <label>
@@ -54,11 +95,23 @@
           </div>
           <div class="form-group">
             <label>Description</label>
-            <textarea v-model="formData.description" rows="4" placeholder="Field of study, achievements, etc."></textarea>
+            <textarea
+              v-model="formData.description"
+              rows="4"
+              placeholder="Field of study, achievements, etc."
+            ></textarea>
+          </div>
+          <div class="form-group checkbox">
+            <label>
+              <input v-model="formData.is_visible" type="checkbox" />
+              Show in portfolio
+            </label>
           </div>
           <div class="form-actions">
             <button type="submit" class="btn btn-primary">Save</button>
-            <button type="button" @click="closeForm" class="btn btn-secondary">Cancel</button>
+            <button type="button" @click="closeForm" class="btn btn-secondary">
+              Cancel
+            </button>
           </div>
         </form>
       </div>
@@ -67,57 +120,64 @@
 </template>
 
 <script>
-import { ref, onMounted } from 'vue'
-import { useProfileStore } from '../stores/profile'
+import { ref, onMounted } from "vue";
+import { useProfileStore } from "../stores/profile";
 
 export default {
-  name: 'EducationList',
+  name: "EducationList",
   setup() {
-    const profileStore = useProfileStore()
-    
-    const education = ref([])
-    const loading = ref(false)
-    const showForm = ref(false)
-    const editingEducation = ref(null)
-    
+    const profileStore = useProfileStore();
+
+    const education = ref([]);
+    const loading = ref(false);
+    const showForm = ref(false);
+    const editingEducation = ref(null);
+
     const formData = ref({
-      degree: '',
-      institution: '',
-      location: '',
-      start_date: '',
-      end_date: '',
+      degree: "",
+      institution: "",
+      location: "",
+      start_date: "",
+      end_date: "",
       is_current: false,
-      description: ''
-    })
+      description: "",
+      is_visible: true,
+    });
 
     const loadEducation = async () => {
-      loading.value = true
+      loading.value = true;
       try {
-        await profileStore.fetchEducation()
-        education.value = profileStore.education
+        await profileStore.fetchEducation();
+        education.value = profileStore.education;
       } catch (err) {
-        console.error('Failed to load education:', err)
+        console.error("Failed to load education:", err);
       } finally {
-        loading.value = false
+        loading.value = false;
       }
-    }
+    };
 
     const saveEducation = async () => {
       try {
         if (editingEducation.value) {
-          await profileStore.updateEducation(editingEducation.value.id, formData.value)
+          await profileStore.updateEducation(
+            editingEducation.value.id,
+            formData.value,
+          );
         } else {
-          await profileStore.createEducation(formData.value)
+          await profileStore.createEducation(formData.value);
         }
-        closeForm()
-        loadEducation()
+        closeForm();
+        loadEducation();
       } catch (err) {
-        alert('Failed to save education: ' + (err.response?.data?.detail || err.message))
+        alert(
+          "Failed to save education: " +
+            (err.response?.data?.detail || err.message),
+        );
       }
-    }
+    };
 
     const editEducation = (edu) => {
-      editingEducation.value = edu
+      editingEducation.value = edu;
       formData.value = {
         degree: edu.degree,
         institution: edu.institution,
@@ -125,45 +185,67 @@ export default {
         start_date: edu.start_date,
         end_date: edu.end_date,
         is_current: edu.is_current,
-        description: edu.description
-      }
-      showForm.value = true
-    }
+        description: edu.description,
+        is_visible: edu.is_visible !== undefined ? edu.is_visible : true,
+      };
+      showForm.value = true;
+    };
 
     const deleteEducation = async (id) => {
-      if (confirm('Are you sure you want to delete this education entry?')) {
+      if (confirm("Are you sure you want to delete this education entry?")) {
         try {
-          await profileStore.deleteEducation(id)
-          loadEducation()
+          await profileStore.deleteEducation(id);
+          loadEducation();
         } catch (err) {
-          alert('Failed to delete education: ' + (err.response?.data?.detail || err.message))
+          alert(
+            "Failed to delete education: " +
+              (err.response?.data?.detail || err.message),
+          );
         }
       }
-    }
+    };
 
     const closeForm = () => {
-      showForm.value = false
-      editingEducation.value = null
+      showForm.value = false;
+      editingEducation.value = null;
       formData.value = {
-        degree: '',
-        institution: '',
-        location: '',
-        start_date: '',
-        end_date: '',
+        degree: "",
+        institution: "",
+        location: "",
+        start_date: "",
+        end_date: "",
         is_current: false,
-        description: ''
+        description: "",
+        is_visible: true,
+      };
+    };
+
+    const toggleVisibility = async (edu) => {
+      try {
+        await profileStore.updateEducation(edu.id, {
+          is_visible: edu.is_visible,
+        });
+      } catch (err) {
+        alert(
+          "Failed to update visibility: " +
+            (err.response?.data?.detail || err.message),
+        );
+        edu.is_visible = !edu.is_visible;
       }
-    }
+    };
 
     const formatDate = (dateString) => {
-      if (!dateString) return 'Not specified'
-      const date = new Date(dateString)
-      return date.toLocaleDateString('en-US', { month: 'long', year: 'numeric' })
-    }
+      if (!dateString) return "Not specified";
+      const date = new Date(dateString);
+      return date.toLocaleDateString("en-US", {
+        month: "long",
+        year: "numeric",
+      });
+    };
 
     onMounted(() => {
-      loadEducation()
-    })
+      loadEducation();
+    });
 
     return {
       education,
@@ -175,10 +257,11 @@ export default {
       editEducation,
       deleteEducation,
       closeForm,
-      formatDate
-    }
-  }
-}
+      formatDate,
+      toggleVisibility,
+    };
+  },
+};
 </script>
 
 <style scoped>
@@ -210,6 +293,20 @@ export default {
 .education-actions {
   display: flex;
   gap: 0.5rem;
+  align-items: center;
+}
+
+.visibility-toggle {
+  display: flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.85rem;
+  color: #555;
+  cursor: pointer;
+}
+
+.visibility-toggle input {
+  width: auto;
 }
 
 .education-details p {
@@ -228,7 +325,7 @@ export default {
   left: 0;
   right: 0;
   bottom: 0;
-  background: rgba(0,0,0,0.5);
+  background: rgba(0, 0, 0, 0.5);
   display: flex;
   justify-content: center;
   align-items: center;

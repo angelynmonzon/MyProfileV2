@@ -7,16 +7,27 @@
         <div class="divider"></div>
       </div>
       <div class="timeline">
-        <div v-for="(exp, i) in experiences" :key="i" class="timeline-item" :class="[{ 'is-right': i % 2 !== 0 }, i % 2 === 0 ? 'reveal-left' : 'reveal-right']">
+        <div
+          v-for="(exp, i) in experiences"
+          :key="i"
+          class="timeline-item"
+          :class="[
+            { 'is-right': i % 2 !== 0 },
+            i % 2 === 0 ? 'reveal-left' : 'reveal-right',
+          ]"
+        >
           <div class="timeline-dot"></div>
           <div class="timeline-card">
             <div class="timeline-date">
-              {{ formatDate(exp.start_date) }} — {{ exp.is_current ? 'Present' : formatDate(exp.end_date) }}
+              {{ formatDate(exp.start_date) }} —
+              {{ exp.is_current ? "Present" : formatDate(exp.end_date) }}
             </div>
             <h3 class="timeline-title">{{ exp.job_title }}</h3>
             <p class="timeline-company">
               <span>{{ exp.company }}</span>
-              <span v-if="exp.location" class="timeline-location">· {{ exp.location }}</span>
+              <span v-if="exp.location" class="timeline-location"
+                >· {{ exp.location }}</span
+              >
             </p>
             <p class="timeline-desc">{{ exp.description }}</p>
           </div>
@@ -32,21 +43,23 @@
 
 <script>
 export default {
-  name: 'ExperienceSection',
-  props: ['profile'],
+  name: "ExperienceSection",
+  props: ["profile"],
   computed: {
     experiences() {
-      return this.profile?.experiences || []
-    }
+      return (this.profile?.experiences || []).filter(
+        (exp) => exp.is_visible !== false,
+      );
+    },
   },
   methods: {
     formatDate(dateString) {
-      if (!dateString) return ''
-      const d = new Date(dateString)
-      return d.toLocaleDateString('en-US', { month: 'short', year: 'numeric' })
-    }
-  }
-}
+      if (!dateString) return "";
+      const d = new Date(dateString);
+      return d.toLocaleDateString("en-US", { month: "short", year: "numeric" });
+    },
+  },
+};
 </script>
 
 <style scoped>
@@ -60,12 +73,18 @@ export default {
 }
 
 .timeline::before {
-  content: '';
+  content: "";
   position: absolute;
   left: 50%;
-  top: 0; bottom: 0;
+  top: 0;
+  bottom: 0;
   width: 1px;
-  background: linear-gradient(to bottom, transparent, rgba(226,185,111,0.3), transparent);
+  background: linear-gradient(
+    to bottom,
+    transparent,
+    rgba(226, 185, 111, 0.3),
+    transparent
+  );
   transform: translateX(-50%);
 }
 
@@ -92,13 +111,13 @@ export default {
   background: var(--color-gold);
   border-radius: 50%;
   transform: translateX(-50%);
-  box-shadow: 0 0 0 4px rgba(226,185,111,0.2);
+  box-shadow: 0 0 0 4px rgba(226, 185, 111, 0.2);
   z-index: 1;
 }
 
 .timeline-card {
   background: var(--color-dark-3);
-  border: 1px solid rgba(255,255,255,0.06);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 12px;
   padding: 1.5rem;
   max-width: 420px;
@@ -107,7 +126,7 @@ export default {
 }
 
 .timeline-card:hover {
-  border-color: rgba(226,185,111,0.2);
+  border-color: rgba(226, 185, 111, 0.2);
 }
 
 .timeline-date {
@@ -133,7 +152,7 @@ export default {
 }
 
 .timeline-location {
-  color: rgba(255,255,255,0.4);
+  color: rgba(255, 255, 255, 0.4);
 }
 
 .timeline-desc {
@@ -144,7 +163,7 @@ export default {
 
 .empty-state {
   text-align: center;
-  color: rgba(255,255,255,0.3);
+  color: rgba(255, 255, 255, 0.3);
   padding: 2rem;
 }
 

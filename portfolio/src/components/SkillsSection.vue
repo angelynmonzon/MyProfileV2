@@ -7,10 +7,20 @@
         <div class="divider"></div>
       </div>
       <div class="skills-grid">
-        <div v-for="(group, i) in skillGroups" :key="i" class="skill-group reveal" :class="'reveal-delay-' + Math.min(i+1, 4)">
+        <div
+          v-for="(group, i) in skillGroups"
+          :key="i"
+          class="skill-group reveal"
+          :class="'reveal-delay-' + Math.min(i + 1, 4)"
+        >
           <h3 class="group-title">{{ group.label }}</h3>
           <div class="skill-tags">
-            <span v-for="(skill, j) in group.skills" :key="j" class="skill-tag">{{ skill }}</span>
+            <span
+              v-for="(skill, j) in group.skills"
+              :key="j"
+              class="skill-tag"
+              >{{ skill }}</span
+            >
           </div>
         </div>
       </div>
@@ -20,31 +30,86 @@
 
 <script>
 const DEFAULT_SKILLS = {
-  'Virtual Assistance': ['Email Management', 'Calendar Scheduling', 'Data Entry', 'Research', 'CRM Tools', 'Google Workspace', 'Microsoft Office'],
-  'Social Media': ['Facebook', 'Instagram', 'TikTok', 'LinkedIn', 'Content Creation', 'Canva', 'Buffer', 'Hootsuite'],
-  'Video & Photo': ['Adobe Premiere Pro', 'CapCut', 'Lightroom', 'Photoshop', 'Canva', 'Color Grading', 'Reels Editing'],
-  'Tools & Software': ['Trello', 'Asana', 'Slack', 'Zoom', 'Notion', 'Airtable', 'Loom'],
-}
+  "Virtual Assistance": [
+    "Email Management",
+    "Calendar Scheduling",
+    "Data Entry",
+    "Research",
+    "CRM Tools",
+    "Google Workspace",
+    "Microsoft Office",
+  ],
+  "Social Media": [
+    "Facebook",
+    "Instagram",
+    "TikTok",
+    "LinkedIn",
+    "Content Creation",
+    "Canva",
+    "Buffer",
+    "Hootsuite",
+  ],
+  "Video & Photo": [
+    "Adobe Premiere Pro",
+    "CapCut",
+    "Lightroom",
+    "Photoshop",
+    "Canva",
+    "Color Grading",
+    "Reels Editing",
+  ],
+  "Tools & Software": [
+    "Trello",
+    "Asana",
+    "Slack",
+    "Zoom",
+    "Notion",
+    "Airtable",
+    "Loom",
+  ],
+};
 
 export default {
-  name: 'SkillsSection',
-  props: ['profile'],
+  name: "SkillsSection",
+  props: ["profile"],
   computed: {
     skillGroups() {
       if (this.profile?.skills?.length > 0) {
-        const first = this.profile.skills[0]
-        if (first && typeof first === 'object' && first.category) {
-          return this.profile.skills.map(g => ({
+        const first = this.profile.skills[0];
+        if (first && typeof first === "object" && first.category) {
+          return this.profile.skills.map((g) => ({
             label: g.category,
-            skills: Array.isArray(g.skills) ? g.skills : []
-          }))
+            skills: Array.isArray(g.skills)
+              ? g.skills
+                  .filter((s) => {
+                    if (typeof s === "object" && s.is_visible === false)
+                      return false;
+                    return true;
+                  })
+                  .map((s) => (typeof s === "object" ? s.name : s))
+              : [],
+          }));
         }
-        return [{ label: 'Skills', skills: this.profile.skills }]
+        return [
+          {
+            label: "Skills",
+            skills: this.profile.skills
+              .filter((s) => {
+                if (typeof s === "object" && s.is_visible === false)
+                  return false;
+                return true;
+              })
+              .map((s) => (typeof s === "object" ? s.name : s)),
+          },
+        ];
       }
-      return Object.entries(DEFAULT_SKILLS).map(([label, skills]) => ({ label, skills }))
-    }
-  }
-}
+      return Object.entries(DEFAULT_SKILLS).map(([label, skills]) => ({
+        label,
+        skills,
+      }));
+    },
+  },
+};
 </script>
 
 <style scoped>
@@ -60,7 +125,7 @@ export default {
 
 .skill-group {
   background: var(--color-dark-3);
-  border: 1px solid rgba(255,255,255,0.06);
+  border: 1px solid rgba(255, 255, 255, 0.06);
   border-radius: 12px;
   padding: 1.75rem;
 }
@@ -73,7 +138,7 @@ export default {
   color: var(--color-gold);
   margin-bottom: 1.25rem;
   padding-bottom: 0.75rem;
-  border-bottom: 1px solid rgba(226,185,111,0.15);
+  border-bottom: 1px solid rgba(226, 185, 111, 0.15);
 }
 
 .skill-tags {
@@ -83,9 +148,9 @@ export default {
 }
 
 .skill-tag {
-  background: rgba(255,255,255,0.05);
+  background: rgba(255, 255, 255, 0.05);
   color: var(--color-white-80);
-  border: 1px solid rgba(255,255,255,0.1);
+  border: 1px solid rgba(255, 255, 255, 0.1);
   padding: 0.3rem 0.75rem;
   border-radius: 20px;
   font-size: 0.82rem;
@@ -94,8 +159,8 @@ export default {
 }
 
 .skill-tag:hover {
-  background: rgba(226,185,111,0.12);
-  border-color: rgba(226,185,111,0.3);
+  background: rgba(226, 185, 111, 0.12);
+  border-color: rgba(226, 185, 111, 0.3);
   color: var(--color-gold);
 }
 </style>
