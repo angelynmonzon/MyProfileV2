@@ -77,8 +77,10 @@ class SupabaseStorage(Storage):
         if not self.use_supabase:
             return self.fallback_storage.url(name)
         
+        name = name.replace('\\', '/')
         try:
-            result = self.supabase.storage.from_(self.bucket_name).get_public_url(name)
+            supabase_url = getattr(settings, 'SUPABASE_URL', '').rstrip('/')
+            result = f"{supabase_url}/storage/v1/object/public/{self.bucket_name}/{name}"
             return result
         except Exception:
             # If public URL fails, try signed URL

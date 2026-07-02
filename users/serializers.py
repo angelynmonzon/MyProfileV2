@@ -78,10 +78,13 @@ class ProjectImageSerializer(serializers.ModelSerializer):
 
     def get_image_url(self, obj):
         if obj.image:
+            url = obj.image.url
+            if url.startswith('http'):
+                return url
             request = self.context.get('request')
             if request:
-                return request.build_absolute_uri(obj.image.url)
-            return obj.image.url
+                return request.build_absolute_uri(url)
+            return url
         return None
 
 
@@ -99,10 +102,13 @@ class PortfolioProjectSerializer(serializers.ModelSerializer):
 
     def get_image_url(self, obj):
         if obj.image:
+            url = obj.image.url
+            if url.startswith('http'):
+                return url
             request = self.context.get('request')
             if request:
-                return request.build_absolute_uri(obj.image.url)
-            return obj.image.url
+                return request.build_absolute_uri(url)
+            return url
         return None
 
     def to_internal_value(self, data):
@@ -145,18 +151,24 @@ class ProfileSerializer(serializers.ModelSerializer):
 
     def get_profile_image_url(self, obj):
         if obj.profile_image:
+            url = obj.profile_image.url
+            if url.startswith('http'):
+                return url
             request = self.context.get('request')
             if request:
-                return request.build_absolute_uri(obj.profile_image.url)
-            return obj.profile_image.url
+                return request.build_absolute_uri(url)
+            return url
         return None
 
     def get_about_image_url(self, obj):
         if obj.about_image:
+            url = obj.about_image.url
+            if url.startswith('http'):
+                return url
             request = self.context.get('request')
             if request:
-                return request.build_absolute_uri(obj.about_image.url)
-            return obj.about_image.url
+                return request.build_absolute_uri(url)
+            return url
         return None
 
 
