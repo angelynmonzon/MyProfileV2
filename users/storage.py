@@ -25,16 +25,20 @@ class SupabaseStorage(Storage):
             if supabase_url and supabase_key:
                 self.supabase = create_client(supabase_url=supabase_url, supabase_key=supabase_key)
                 self.use_supabase = True
+                print(f"[Supabase] Storage initialized OK, bucket='{self.bucket_name}'")
+            else:
+                print("[Supabase] Credentials not set, using local storage")
         except Exception as e:
-            # Fall back to default storage if Supabase fails to initialize
-            print(f"Warning: Failed to initialize Supabase storage: {e}")
+            print(f"[Supabase] Failed to initialize: {e}")
             self.use_supabase = False
     
     def _save(self, name, content):
         """
         Save file to Supabase Storage or fallback storage.
         """
+        print(f"[Supabase] _save called: name={name}, use_supabase={self.use_supabase}")
         if not self.use_supabase:
+            print(f"[Supabase] Falling back to local storage for: {name}")
             return self.fallback_storage._save(name, content)
         
         # Generate unique filename if needed
@@ -46,17 +50,24 @@ class SupabaseStorage(Storage):
         file_content = content.read()
         
         # Upload to Supabase
+        name = name.replace('\\', '/')
+        content_type = content.content_type if hasattr(content, 'content_type') else 'image/jpeg'
+        print(f"[Supabase] Uploading '{name}' to bucket '{self.bucket_name}' ({len(file_content)} bytes, type={content_type})")
         try:
             result = self.supabase.storage.from_(self.bucket_name).upload(
                 path=name,
                 file=file_content,
                 file_options={
-                    'content-type': content.content_type if hasattr(content, 'content_type') else 'image/jpeg'
+                    'content-type': content_type,
+                    'upsert': 'true'
                 }
             )
+            print(f"[Supabase] Upload SUCCESS: {name}")
             return name
         except Exception as e:
-            print(f"Warning: Failed to upload to Supabase, falling back to local storage: {e}")
+            import traceback
+            print(f"[Supabase] Upload FAILED: {e}")
+            print(f"[Supabase] Traceback: {traceback.format_exc()}")
             return self.fallback_storage._save(name, content)
     
     def url(self, name):
@@ -119,6 +130,9 @@ class SupabaseStorage(Storage):
         except Exception:
             return 0
     
+    def deconstruct(self):
+        return ('users.storage.SupabaseStorage', [], {})
+
     def get_available_name(self, name, max_length=None):
         """
         Generate a unique filename if the file already exists.

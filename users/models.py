@@ -1,5 +1,8 @@
 from django.contrib.auth.models import AbstractUser
 from django.db import models
+from users.storage import SupabaseStorage
+
+_supabase_storage = SupabaseStorage()
 
 
 class User(AbstractUser):
@@ -40,8 +43,8 @@ class Profile(models.Model):
     user = models.OneToOneField(User, on_delete=models.CASCADE, related_name='profile')
     
     # Basic Information
-    profile_image = models.ImageField(upload_to='profile_images/', blank=True, null=True)
-    about_image = models.ImageField(upload_to='about_images/', blank=True, null=True)
+    profile_image = models.ImageField(upload_to='profile_images/', blank=True, null=True, storage=_supabase_storage)
+    about_image = models.ImageField(upload_to='about_images/', blank=True, null=True, storage=_supabase_storage)
     title = models.CharField(max_length=200, help_text="Professional title (e.g., Virtual Assistant)")
     bio = models.TextField(help_text="Short professional biography")
     hero_description = models.TextField(blank=True, help_text="Short tagline shown on the hero section")
@@ -131,7 +134,7 @@ class PortfolioProject(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField()
     project_url = models.URLField(blank=True)
-    image = models.ImageField(upload_to='portfolio_images/', blank=True, null=True)
+    image = models.ImageField(upload_to='portfolio_images/', blank=True, null=True, storage=_supabase_storage)
     video_links = models.JSONField(default=list, blank=True, help_text="List of video URLs (YouTube, Vimeo, etc.)")
     technologies = models.JSONField(default=list, blank=True, help_text="List of technologies/tools used")
     is_visible = models.BooleanField(default=True, help_text="Show this project in portfolio")
@@ -148,7 +151,7 @@ class PortfolioProject(models.Model):
 class ProjectImage(models.Model):
     """Additional images for portfolio projects"""
     project = models.ForeignKey(PortfolioProject, on_delete=models.CASCADE, related_name='project_images')
-    image = models.ImageField(upload_to='portfolio_images/')
+    image = models.ImageField(upload_to='portfolio_images/', storage=_supabase_storage)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

@@ -91,7 +91,7 @@ export const useProfileStore = defineStore("profile", () => {
     try {
       const id = await getProfileId();
       const response = await api.patch(`/profiles/${id}/`, formData, {
-        headers: { "Content-Type": "multipart/form-data" },
+        headers: { "Content-Type": undefined },
       });
       profile.value = response.data;
       return response.data;

@@ -128,8 +128,14 @@ SUPABASE_STORAGE_BUCKET = os.environ.get('SUPABASE_STORAGE_BUCKET', 'images')
 
 # Use Supabase storage if configured
 if SUPABASE_URL and SUPABASE_SERVICE_ROLE_KEY:
-    DEFAULT_FILE_STORAGE = 'users.storage.SupabaseStorage'
-    # Fallback to local storage if Supabase is not configured
+    STORAGES = {
+        "default": {
+            "BACKEND": "users.storage.SupabaseStorage",
+        },
+        "staticfiles": {
+            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        },
+    }
 
 # Default primary key field type
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'

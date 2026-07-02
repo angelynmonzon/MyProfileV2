@@ -2,6 +2,7 @@ from rest_framework import viewsets, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 from rest_framework.permissions import IsAuthenticated, AllowAny
+from rest_framework.parsers import MultiPartParser, FormParser, JSONParser
 from rest_framework.views import APIView
 from rest_framework.authtoken.models import Token
 from django.contrib.auth import authenticate
@@ -128,6 +129,7 @@ class ProfileViewSet(viewsets.ModelViewSet):
     """
     queryset = Profile.objects.all()
     permission_classes = [IsAuthenticated]
+    parser_classes = [MultiPartParser, FormParser, JSONParser]
 
     def get_serializer_class(self):
         if self.action == 'create':
@@ -157,6 +159,11 @@ class ProfileViewSet(viewsets.ModelViewSet):
 
     def perform_create(self, serializer):
         serializer.save(user=self.request.user)
+
+    def partial_update(self, request, *args, **kwargs):
+        print(f"[DEBUG] PATCH FILES: {request.FILES}")
+        print(f"[DEBUG] PATCH DATA keys: {list(request.data.keys())}")
+        return super().partial_update(request, *args, **kwargs)
 
     @action(detail=False, methods=['get'])
     def my_profile(self, request):

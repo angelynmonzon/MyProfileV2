@@ -500,6 +500,12 @@ export default {
       loading.value = true;
       error.value = null;
       try {
+        console.log(
+          "[Save] heroFile:",
+          heroFile.value,
+          "aboutFile:",
+          aboutFile.value,
+        );
         const hasImage = heroFile.value || aboutFile.value;
         const imageKeys = ["profile_image", "about_image"];
         if (hasImage) {
