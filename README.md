@@ -116,13 +116,15 @@ pip install -r requirements.txt
    Create a `.env` file in the project root:
 
 ```env
-DJANGO_SECRET_KEY=your-secret-key-here
+SECRET_KEY=your-secret-key-here
 DEBUG=True
+ALLOWED_HOSTS=localhost,127.0.0.1
 SUPABASE_URL=your-supabase-url
 SUPABASE_KEY=your-supabase-anon-key
 SUPABASE_SERVICE_ROLE_KEY=your-supabase-service-role-key
+SUPABASE_STORAGE_BUCKET=images
 
-# Supabase PostgreSQL Database
+# Supabase PostgreSQL Database (optional locally; SQLite is used if omitted)
 DB_NAME=postgres
 DB_USER=postgres.your-project-ref
 DB_PASSWORD=your-database-password
@@ -412,7 +414,7 @@ You can choose between two deployment approaches:
    - **Node Version**: 18 or later (required for Vite 5)
 4. Add environment variable:
    - `VITE_API_BASE_URL`: Your Django backend URL (e.g., `https://your-backend-name.onrender.com/api`)
-   - `VITE_MEDIA_BASE_URL`: Your Django backend media URL (e.g., `https://your-backend-name.onrender.com/media`)
+   - `VITE_ADMIN_URL`: Admin CMS URL, if it differs from `/admin`
 5. Deploy the service
 
 **Option 2: Manual Configuration (Django Backend)**
@@ -441,7 +443,7 @@ You can choose between two deployment approaches:
 **For Separate Services:**
 
 - Deploy Django backend first and get its URL
-- Use the backend URL for `VITE_API_BASE_URL` and `VITE_MEDIA_BASE_URL` in frontend
+- Use the backend URL for `VITE_API_BASE_URL` in frontend
 - Both services need to be deployed separately
 - Frontend will communicate with backend via the configured URLs
 

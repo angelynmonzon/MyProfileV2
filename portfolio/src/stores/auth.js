@@ -2,6 +2,8 @@ import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
 import axios from 'axios'
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api'
+
 export const useAuthStore = defineStore('auth', () => {
   const user = ref(null)
   const token = ref(localStorage.getItem('auth_token') || null)
@@ -11,7 +13,7 @@ export const useAuthStore = defineStore('auth', () => {
   const isEditor = computed(() => user.value?.user_type === 'EDITOR')
 
   const api = axios.create({
-    baseURL: '/api',
+    baseURL: API_BASE_URL,
     headers: {
       'Content-Type': 'application/json'
     }

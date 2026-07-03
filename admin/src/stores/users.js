@@ -3,6 +3,8 @@ import { ref } from 'vue'
 import axios from 'axios'
 import { useAuthStore } from './auth'
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '/api'
+
 export const useUsersStore = defineStore('users', () => {
   const users = ref([])
   const loading = ref(false)
@@ -11,7 +13,7 @@ export const useUsersStore = defineStore('users', () => {
   const authStore = useAuthStore()
 
   const api = axios.create({
-    baseURL: '/api',
+    baseURL: API_BASE_URL,
     headers: {
       'Content-Type': 'application/json'
     }
