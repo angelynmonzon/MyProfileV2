@@ -409,7 +409,7 @@ You can choose between two deployment approaches:
    - **Root Directory**: `portfolio`
    - **Build Command**: `npm install && npm run build`
    - **Publish Directory**: `dist`
-   - **Node Version**: 18 or later
+   - **Node Version**: 18 or later (required for Vite 5)
 4. Add environment variable:
    - `VITE_API_BASE_URL`: Your Django backend URL (e.g., `https://your-backend-name.onrender.com/api`)
    - `VITE_MEDIA_BASE_URL`: Your Django backend media URL (e.g., `https://your-backend-name.onrender.com/media`)
