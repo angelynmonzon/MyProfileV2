@@ -179,4 +179,5 @@ CORS_ALLOWED_ORIGINS = [
     "https://angelymonzon-porfolio.onrender.com",
 ]
 
-CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_ALL_ORIGINS = True  # Temporary fix for debugging
+CORS_ALLOW_CREDENTIALS = False
