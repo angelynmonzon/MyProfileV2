@@ -2,7 +2,7 @@
 URL configuration for ging_profile_v2 project.
 """
 from django.contrib import admin
-from django.urls import path, include
+from django.urls import path, include, re_path
 from django.conf import settings
 from django.conf.urls.static import static
 from django.http import HttpResponse
@@ -18,14 +18,14 @@ def serve_vue_frontend(request):
     return HttpResponse("Frontend not built. Run 'npm run build' in portfolio directory.", status=503)
 
 urlpatterns = [
-    path('admin/', admin.site.urls),
+    path('django-admin/', admin.site.urls),
     path('api/', include('users.urls')),
 ]
 
 # Serve Vue frontend in production
 if not settings.DEBUG and os.path.exists(settings.BASE_DIR / 'portfolio' / 'dist'):
     urlpatterns += [
-        path('', serve_vue_frontend, name='home'),
+        re_path(r'^(?!api/|static/|media/|django-admin/).*$', serve_vue_frontend, name='vue_frontend'),
     ]
 
 if settings.DEBUG:
