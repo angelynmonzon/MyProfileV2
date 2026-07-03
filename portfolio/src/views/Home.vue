@@ -4,18 +4,21 @@
       <div class="loader-ring"></div>
       <p class="script">Loading...</p>
     </div>
-    <template v-else>
+    <template v-else-if="profile">
       <HeroSection :profile="profile" />
       <AboutSection :profile="profile" />
-      <ServicesSection v-if="profile.show_services" :profile="profile" />
-      <SkillsSection v-if="profile.show_skills" :profile="profile" />
-      <ExperienceSection v-if="profile.show_experience" :profile="profile" />
-      <EducationSection v-if="profile.show_education" :profile="profile" />
-      <PortfolioSection v-if="profile.show_projects" :profile="profile" />
-      <TestimonialSection v-if="profile.show_testimonials" :profile="profile" />
-      <CertificateSection v-if="profile.show_certificates" :profile="profile" />
+      <ServicesSection v-if="profile?.show_services" :profile="profile" />
+      <SkillsSection v-if="profile?.show_skills" :profile="profile" />
+      <ExperienceSection v-if="profile?.show_experience" :profile="profile" />
+      <EducationSection v-if="profile?.show_education" :profile="profile" />
+      <PortfolioSection v-if="profile?.show_projects" :profile="profile" />
+      <TestimonialSection v-if="profile?.show_testimonials" :profile="profile" />
+      <CertificateSection v-if="profile?.show_certificates" :profile="profile" />
       <ContactSection :profile="profile" />
     </template>
+    <div v-else class="page-loader empty-state">
+      <p class="script">Profile unavailable</p>
+    </div>
   </div>
 </template>
 
@@ -79,5 +82,9 @@ export default {
   font-size: 1.8rem;
   color: var(--color-gold);
   opacity: 0.7;
+}
+
+.empty-state {
+  background: var(--color-cream);
 }
 </style>

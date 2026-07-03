@@ -81,7 +81,7 @@ export default {
     onMounted(async () => {
       try {
         const data = await fetchPublicProfile()
-        profile.value = data.length > 0 ? data[0] : null
+        profile.value = Array.isArray(data) ? data[0] || null : data
       } catch (err) {
         console.error('Failed to load profile:', err)
       } finally {
