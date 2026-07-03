@@ -176,6 +176,7 @@ CORS_ALLOWED_ORIGINS = [
     "http://localhost:8081",
     "http://127.0.0.1:8081",
     "https://angelymonzon-portfolio.onrender.com",
+    "https://angelymonzon-porfolio.onrender.com",
 ]
 
 CORS_ALLOW_CREDENTIALS = True
