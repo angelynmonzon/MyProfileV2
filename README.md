@@ -356,6 +356,18 @@ This project is configured for easy deployment to Render.com. The following file
 - `render.yaml` - Render configuration file (optional but recommended)
 - `requirements.txt` - Updated with gunicorn for production
 - `settings.py` - Updated to support dynamic Render domains
+- `portfolio/vite.config.js` - Updated with build configuration
+- `portfolio/src/api/profile.js` - Updated to support environment variable for API URL
+
+#### Deployment Architecture
+
+The deployment uses a **single service** approach:
+
+- Django backend serves both the API and the Vue frontend
+- Vue frontend is built during the build process (`npm run build`)
+- Built static files are served by Django
+- API endpoints remain at `/api/`
+- Frontend is served at the root path `/`
 
 #### Deployment Steps
 
@@ -385,7 +397,7 @@ This project is configured for easy deployment to Render.com. The following file
 1. Push to GitHub
 2. Create new Web Service on Render
 3. Configure:
-   - **Build Command**: `pip install -r requirements.txt`
+   - **Build Command**: `pip install -r requirements.txt && cd portfolio && npm install && npm run build`
    - **Start Command**: `gunicorn ging_profile_v2.wsgi:application --bind 0.0.0.0:$PORT`
    - **Python Version**: 3.11 or later
 4. Add the same environment variables as above
@@ -398,6 +410,8 @@ This project is configured for easy deployment to Render.com. The following file
 - Your Supabase credentials must be configured in Render environment variables
 - The app will automatically run migrations and collect static files on deployment
 - The `ALLOWED_HOSTS` setting automatically includes your Render domain
+- The Vue frontend is built during the build process and served by Django
+- No need for separate frontend deployment - everything is in one service
 
 #### Getting Supabase Credentials
 

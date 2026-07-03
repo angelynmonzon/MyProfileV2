@@ -121,6 +121,11 @@ USE_TZ = True
 STATIC_URL = 'static/'
 STATIC_ROOT = BASE_DIR / 'staticfiles'
 
+# Serve Vue frontend static files
+STATICFILES_DIRS = [
+    BASE_DIR / 'portfolio' / 'dist',
+] if (BASE_DIR / 'portfolio' / 'dist').exists() else []
+
 # Media files
 MEDIA_URL = 'media/'
 MEDIA_ROOT = BASE_DIR / 'media'
