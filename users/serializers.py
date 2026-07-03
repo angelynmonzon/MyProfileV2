@@ -174,7 +174,7 @@ class ProfileSerializer(serializers.ModelSerializer):
     username = serializers.CharField(source='user.username', read_only=True)
     profile_image_url = serializers.SerializerMethodField()
     about_image_url = serializers.SerializerMethodField()
-    
+
     class Meta:
         model = Profile
         fields = [
@@ -187,6 +187,16 @@ class ProfileSerializer(serializers.ModelSerializer):
             'created_at', 'updated_at'
         ]
         read_only_fields = ['id', 'user', 'created_at', 'updated_at']
+
+    def to_representation(self, instance):
+        data = super().to_representation(instance)
+        # Filter nested lists to only show visible items
+        data['experiences'] = [exp for exp in data.get('experiences', []) if exp.get('is_visible') != False]
+        data['education'] = [edu for edu in data.get('education', []) if edu.get('is_visible') != False]
+        data['projects'] = [proj for proj in data.get('projects', []) if proj.get('is_visible') != False]
+        data['testimonials'] = [test for test in data.get('testimonials', []) if test.get('is_visible') != False]
+        data['certificates'] = [cert for cert in data.get('certificates', []) if cert.get('is_visible') != False]
+        return data
 
     def get_profile_image_url(self, obj):
         if obj.profile_image:
