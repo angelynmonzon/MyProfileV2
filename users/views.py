@@ -139,7 +139,7 @@ class ProfileViewSet(viewsets.ModelViewSet):
         return ProfileSerializer
 
     def get_permissions(self):
-        if self.action == 'public':
+        if self.action in ['public', 'public_profile']:
             return [AllowAny()]
         return [IsAuthenticated()]
 
@@ -173,6 +173,15 @@ class ProfileViewSet(viewsets.ModelViewSet):
         return Response(serializer.data)
 
     @action(detail=False, methods=['get'])
+    def public_profile(self, request):
+        """Get the public profile for the portfolio website"""
+        public_profile = Profile.objects.filter(is_available=True).first()
+        if not public_profile:
+            return Response({'detail': 'No public profile found'}, status=status.HTTP_404_NOT_FOUND)
+        serializer = ProfileSerializer(public_profile)
+        return Response(serializer.data)
+
+    @action(detail=False, methods=['get'])
     def public(self, request):
         """
         Get all public profiles (for public website)
@@ -193,13 +202,27 @@ class ExperienceViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
+        if self.action == 'public':
+            return Experience.objects.filter(profile__is_available=True)
         if self.request.user.is_superadmin():
             return Experience.objects.all()
         return Experience.objects.filter(profile__user=self.request.user)
 
+    def get_permissions(self):
+        if self.action == 'public':
+            return [AllowAny()]
+        return [IsAuthenticated()]
+
     def perform_create(self, serializer):
         profile, created = Profile.objects.get_or_create(user=self.request.user)
         serializer.save(profile=profile)
+
+    @action(detail=False, methods=['get'])
+    def public(self, request):
+        """Get all public experiences for the portfolio website"""
+        public_experiences = Experience.objects.filter(profile__is_available=True)
+        serializer = ExperienceSerializer(public_experiences, many=True)
+        return Response(serializer.data)
 
 
 class EducationViewSet(viewsets.ModelViewSet):
@@ -212,13 +235,27 @@ class EducationViewSet(viewsets.ModelViewSet):
     permission_classes = [IsAuthenticated]
 
     def get_queryset(self):
+        if self.action == 'public':
+            return Education.objects.filter(profile__is_available=True)
         if self.request.user.is_superadmin():
             return Education.objects.all()
         return Education.objects.filter(profile__user=self.request.user)
 
+    def get_permissions(self):
+        if self.action == 'public':
+            return [AllowAny()]
+        return [IsAuthenticated()]
+
     def perform_create(self, serializer):
         profile, created = Profile.objects.get_or_create(user=self.request.user)
         serializer.save(profile=profile)
+
+    @action(detail=False, methods=['get'])
+    def public(self, request):
+        """Get all public education for the portfolio website"""
+        public_education = Education.objects.filter(profile__is_available=True)
+        serializer = EducationSerializer(public_education, many=True)
+        return Response(serializer.data)
 
 
 class PortfolioProjectViewSet(viewsets.ModelViewSet):
@@ -232,13 +269,27 @@ class PortfolioProjectViewSet(viewsets.ModelViewSet):
     parser_classes = [MultiPartParser, FormParser, JSONParser]
 
     def get_queryset(self):
+        if self.action == 'public':
+            return PortfolioProject.objects.filter(profile__is_available=True)
         if self.request.user.is_superadmin():
             return PortfolioProject.objects.all()
         return PortfolioProject.objects.filter(profile__user=self.request.user)
 
+    def get_permissions(self):
+        if self.action == 'public':
+            return [AllowAny()]
+        return [IsAuthenticated()]
+
     def perform_create(self, serializer):
         profile, created = Profile.objects.get_or_create(user=self.request.user)
         serializer.save(profile=profile)
+
+    @action(detail=False, methods=['get'])
+    def public(self, request):
+        """Get all public projects for the portfolio website"""
+        public_projects = PortfolioProject.objects.filter(profile__is_available=True)
+        serializer = PortfolioProjectSerializer(public_projects, many=True)
+        return Response(serializer.data)
 
 
 class ProjectImageViewSet(viewsets.ModelViewSet):

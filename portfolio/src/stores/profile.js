@@ -46,6 +46,23 @@ export const useProfileStore = defineStore("profile", () => {
     }
   };
 
+  const fetchPublicProfile = async () => {
+    loading.value = true;
+    error.value = null;
+    try {
+      const response = await api.get("/profiles/public_profile/");
+      profile.value = response.data;
+      return response.data;
+    } catch (err) {
+      error.value =
+        err.response?.data?.detail || "Failed to fetch public profile";
+      console.error("Fetch public profile error:", err);
+      throw err;
+    } finally {
+      loading.value = false;
+    }
+  };
+
   const createProfile = async (profileData) => {
     loading.value = true;
     error.value = null;
@@ -120,6 +137,23 @@ export const useProfileStore = defineStore("profile", () => {
     }
   };
 
+  const fetchPublicExperiences = async () => {
+    loading.value = true;
+    error.value = null;
+    try {
+      const response = await api.get("/experiences/public/");
+      experiences.value = response.data;
+      return response.data;
+    } catch (err) {
+      error.value =
+        err.response?.data?.detail || "Failed to fetch public experiences";
+      console.error("Fetch public experiences error:", err);
+      throw err;
+    } finally {
+      loading.value = false;
+    }
+  };
+
   const createExperience = async (experienceData) => {
     loading.value = true;
     error.value = null;
@@ -181,6 +215,23 @@ export const useProfileStore = defineStore("profile", () => {
     } catch (err) {
       error.value = err.response?.data?.detail || "Failed to fetch education";
       console.error("Fetch education error:", err);
+      throw err;
+    } finally {
+      loading.value = false;
+    }
+  };
+
+  const fetchPublicEducation = async () => {
+    loading.value = true;
+    error.value = null;
+    try {
+      const response = await api.get("/education/public/");
+      education.value = response.data;
+      return response.data;
+    } catch (err) {
+      error.value =
+        err.response?.data?.detail || "Failed to fetch public education";
+      console.error("Fetch public education error:", err);
       throw err;
     } finally {
       loading.value = false;
@@ -254,6 +305,23 @@ export const useProfileStore = defineStore("profile", () => {
     }
   };
 
+  const fetchPublicProjects = async () => {
+    loading.value = true;
+    error.value = null;
+    try {
+      const response = await api.get("/projects/public/");
+      projects.value = response.data;
+      return response.data;
+    } catch (err) {
+      error.value =
+        err.response?.data?.detail || "Failed to fetch public projects";
+      console.error("Fetch public projects error:", err);
+      throw err;
+    } finally {
+      loading.value = false;
+    }
+  };
+
   const createProject = async (projectData) => {
     loading.value = true;
     error.value = null;
@@ -313,18 +381,22 @@ export const useProfileStore = defineStore("profile", () => {
     loading,
     error,
     fetchMyProfile,
+    fetchPublicProfile,
     createProfile,
     updateProfile,
     updateProfileForm,
     fetchExperiences,
+    fetchPublicExperiences,
     createExperience,
     updateExperience,
     deleteExperience,
     fetchEducation,
+    fetchPublicEducation,
     createEducation,
     updateEducation,
     deleteEducation,
     fetchProjects,
+    fetchPublicProjects,
     createProject,
     updateProject,
     deleteProject,

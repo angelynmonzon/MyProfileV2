@@ -53,6 +53,6 @@ const normalizeProfile = (profile) => {
 };
 
 export const fetchPublicProfile = async () => {
-  const response = await api.get("/profiles/public/");
-  return response.data.map(normalizeProfile);
+  const response = await api.get("/profiles/public_profile/");
+  return normalizeProfile(response.data);
 };
