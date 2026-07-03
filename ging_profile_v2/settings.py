@@ -20,6 +20,11 @@ SECRET_KEY = os.environ.get('SECRET_KEY', 'django-insecure-change-this-in-produc
 DEBUG = os.environ.get('DEBUG', 'True') == 'True'
 
 ALLOWED_HOSTS = os.environ.get('ALLOWED_HOSTS', 'localhost,127.0.0.1').split(',')
+# Add Render domain dynamically
+if 'RENDER_SERVICE_NAME' in os.environ:
+    render_domain = f"{os.environ['RENDER_SERVICE_NAME']}.onrender.com"
+    if render_domain not in ALLOWED_HOSTS:
+        ALLOWED_HOSTS.append(render_domain)
 
 # Application definition
 INSTALLED_APPS = [

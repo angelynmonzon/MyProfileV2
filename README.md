@@ -5,6 +5,7 @@ A full-stack portfolio website with Django backend, Vue.js frontend, and Supabas
 ## Features
 
 ### Public Portfolio Site
+
 - **Hero Section**: Professional introduction with profile image
 - **About Section**: Personal bio and about image
 - **Services Section**: Display offered services with icons
@@ -18,6 +19,7 @@ A full-stack portfolio website with Django backend, Vue.js frontend, and Supabas
 - **Section Visibility**: Toggle sections on/off via admin panel
 
 ### Admin Panel
+
 - **User Management**: Create, Read, Update, Delete users
 - **Role-Based Access Control**:
   - **SuperAdmin**: Full CRUD access to all users and profile management
@@ -98,18 +100,21 @@ ging_profile_v2/
 ### Backend Setup (Django)
 
 1. **Create a virtual environment**:
+
 ```bash
 python -m venv venv
 source venv/bin/activate  # On Windows: venv\Scripts\activate
 ```
 
 2. **Install dependencies**:
+
 ```bash
 pip install -r requirements.txt
 ```
 
 3. **Set up environment variables**:
-Create a `.env` file in the project root:
+   Create a `.env` file in the project root:
+
 ```env
 DJANGO_SECRET_KEY=your-secret-key-here
 DEBUG=True
@@ -128,17 +133,20 @@ DB_PORT=5432
 The database connection string is available in your Supabase dashboard under **Project Settings > Database > Connection string**. Use the transaction or session pooler host.
 
 4. **Run migrations**:
+
 ```bash
 python manage.py makemigrations
 python manage.py migrate
 ```
 
 5. **Create a superadmin user**:
+
 ```bash
 python manage.py createsuperuser
 ```
 
 6. **Run the Django server**:
+
 ```bash
 python manage.py runserver
 ```
@@ -148,16 +156,19 @@ The Django API will be available at `http://localhost:8000`
 ### Frontend Setup (Vue.js)
 
 1. **Navigate to portfolio folder**:
+
 ```bash
 cd portfolio
 ```
 
 2. **Install dependencies**:
+
 ```bash
 npm install
 ```
 
 3. **Run the development server**:
+
 ```bash
 npm run dev
 ```
@@ -167,20 +178,24 @@ The Vue application will be available at `http://localhost:5174`
 ### Quick Start (All Servers)
 
 On Windows, you can use the provided PowerShell script to run all servers simultaneously:
+
 ```powershell
 .\start-all.ps1
 ```
 
 This will start:
+
 - Django API on http://localhost:8000
 - Vue frontend on http://localhost:5174
 
 ## Application Routes
 
 ### Public Portfolio Site
+
 - `/` - Portfolio home page (public)
 
 ### Admin Panel
+
 - `/admin` - Redirects to login
 - `/admin/login` - Login page
 - `/admin/profile-cms` - Profile management (requires authentication)
@@ -192,9 +207,11 @@ This will start:
 ## API Endpoints
 
 ### Authentication
+
 - `POST /api/auth/login/` - Login with username/password
 
 ### Users API
+
 - `GET /api/users/` - List all users (authenticated)
 - `POST /api/users/` - Create user (SuperAdmin only)
 - `GET /api/users/{id}/` - Get user details (authenticated)
@@ -203,24 +220,28 @@ This will start:
 - `DELETE /api/users/{id}/` - Delete user (SuperAdmin only)
 
 ### Profile API
+
 - `GET /api/profiles/public/` - Get public profile (no auth required)
 - `GET /api/profiles/my_profile/` - Get current user's profile (authenticated)
 - `POST /api/profiles/` - Create profile (authenticated)
 - `PATCH /api/profiles/{id}/` - Update profile (authenticated)
 
 ### Experience API
+
 - `GET /api/experiences/` - List experiences (authenticated)
 - `POST /api/experiences/` - Create experience (authenticated)
 - `PATCH /api/experiences/{id}/` - Update experience (authenticated)
 - `DELETE /api/experiences/{id}/` - Delete experience (authenticated)
 
 ### Education API
+
 - `GET /api/education/` - List education (authenticated)
 - `POST /api/education/` - Create education (authenticated)
 - `PATCH /api/education/{id}/` - Update education (authenticated)
 - `DELETE /api/education/{id}/` - Delete education (authenticated)
 
 ### Portfolio Projects API
+
 - `GET /api/projects/` - List projects (authenticated)
 - `POST /api/projects/` - Create project (authenticated)
 - `PATCH /api/projects/{id}/` - Update project (authenticated)
@@ -229,12 +250,14 @@ This will start:
 ## User Roles
 
 ### SuperAdmin
+
 - Full CRUD access to all users
 - Can create, update, and delete users
 - Can change user roles
 - Can view all users
 
 ### Editor
+
 - Read-only access to users
 - Can view user list and details
 - Cannot create, update, or delete users
@@ -243,6 +266,7 @@ This will start:
 ## Authentication
 
 The application uses token-based authentication. When logging in:
+
 1. The frontend sends username and password to Django API
 2. Django validates credentials and returns a token
 3. The token is stored in localStorage
@@ -251,6 +275,7 @@ The application uses token-based authentication. When logging in:
 ## Supabase Integration
 
 The application integrates with Supabase for:
+
 - **Image Storage**: Profile images, project images, and other media files are stored in Supabase Storage
 - **PostgreSQL Database**: Optional - can use Supabase PostgreSQL instead of local SQLite
 - **Storage Backend**: Custom Django storage backend (`SupabaseStorage`) handles file uploads to Supabase
@@ -258,11 +283,13 @@ The application integrates with Supabase for:
 ### Migrating Images to Supabase
 
 If you have local images and want to migrate them to Supabase Storage:
+
 ```bash
 python manage.py migrate_to_supabase
 ```
 
 This command will:
+
 1. Find all images in local media directories
 2. Upload them to Supabase Storage bucket
 3. Update database records to use Supabase URLs
@@ -277,6 +304,7 @@ This command will:
 ### Testing
 
 Run Django tests:
+
 ```bash
 python manage.py test
 ```
@@ -289,31 +317,98 @@ If you have existing data in `db.sqlite3`, follow these steps to migrate it to S
    - `DB_NAME`, `DB_USER`, `DB_PASSWORD`, `DB_HOST`, `DB_PORT`
 
 2. **Dump all data from SQLite**:
+
 ```bash
 python manage.py dumpdata --natural-primary --natural-foreign --all --indent 2 > data_dump.json
 ```
 
 3. **Install the PostgreSQL driver**:
+
 ```bash
 pip install psycopg2-binary==2.9.9
 ```
 
 4. **Run migrations on Supabase PostgreSQL**:
+
 ```bash
 python manage.py migrate
 ```
 
 5. **Load data into Supabase PostgreSQL**:
+
 ```bash
 python manage.py loaddata data_dump.json
 ```
 
 6. **Create a new superuser if needed**:
+
 ```bash
 python manage.py createsuperuser
 ```
 
 ## Production Deployment
+
+### Deploy to Render.com
+
+This project is configured for easy deployment to Render.com. The following files have been added:
+
+- `Procfile` - Defines the web process for Render
+- `render.yaml` - Render configuration file (optional but recommended)
+- `requirements.txt` - Updated with gunicorn for production
+- `settings.py` - Updated to support dynamic Render domains
+
+#### Deployment Steps
+
+**Option 1: Using render.yaml (Recommended)**
+
+1. Push your code to GitHub
+2. Go to [render.com](https://render.com) and sign up/login
+3. Click "New +" → "Web Service"
+4. Connect your GitHub repository
+5. Render will detect the `render.yaml` and auto-configure
+6. Set the following environment variables in Render dashboard:
+   - `SECRET_KEY` - Generate a secure secret key (or let Render auto-generate)
+   - `DEBUG` - Set to `False`
+   - `ALLOWED_HOSTS` - Set to `*.onrender.com`
+   - `SUPABASE_URL` - Your Supabase project URL
+   - `SUPABASE_KEY` - Your Supabase anon key
+   - `SUPABASE_SERVICE_ROLE_KEY` - Your Supabase service role key
+   - `SUPABASE_STORAGE_BUCKET` - Your Supabase storage bucket name (default: images)
+   - `DB_NAME` - Database name (postgres)
+   - `DB_USER` - Database user (e.g., postgres.your-project-ref)
+   - `DB_PASSWORD` - Database password
+   - `DB_HOST` - Database host (Supabase pooler URL, e.g., aws-0-region.pooler.supabase.com)
+   - `DB_PORT` - Database port (5432)
+
+**Option 2: Manual Configuration**
+
+1. Push to GitHub
+2. Create new Web Service on Render
+3. Configure:
+   - **Build Command**: `pip install -r requirements.txt`
+   - **Start Command**: `gunicorn ging_profile_v2.wsgi:application --bind 0.0.0.0:$PORT`
+   - **Python Version**: 3.11 or later
+4. Add the same environment variables as above
+5. Add a post-deploy command: `python manage.py migrate --noinput && python manage.py collectstatic --noinput`
+
+#### Important Notes
+
+- The `SECRET_KEY` will be auto-generated by Render if using render.yaml
+- `DEBUG` is set to `False` in production
+- Your Supabase credentials must be configured in Render environment variables
+- The app will automatically run migrations and collect static files on deployment
+- The `ALLOWED_HOSTS` setting automatically includes your Render domain
+
+#### Getting Supabase Credentials
+
+1. Go to your Supabase project dashboard
+2. **Supabase URL**: Available in Project Settings > API
+3. **Supabase Keys**: Available in Project Settings > API (anon key and service role key)
+4. **Database Credentials**: Available in Project Settings > Database > Connection string
+   - Use the "Transaction pooler" or "Session pooler" connection details
+   - The pooler URL format: `aws-0-region.pooler.supabase.com`
+
+### General Production Checklist
 
 1. Set `DEBUG=False` in Django settings
 2. Use environment variables for sensitive data
