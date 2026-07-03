@@ -213,6 +213,9 @@ import { useProfileStore } from "../stores/profile";
 import axios from "axios";
 import { useAuthStore } from "../stores/auth";
 
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || "/api";
+const apiUrl = (path) => `${API_BASE_URL}${path}`;
+
 export default {
   name: "ProjectList",
   setup() {
@@ -345,7 +348,7 @@ export default {
         let project;
         if (editingProject.value) {
           const res = await axios.patch(
-            `/api/projects/${editingProject.value.id}/`,
+            apiUrl(`/projects/${editingProject.value.id}/`),
             payload,
             { headers },
           );
@@ -355,7 +358,7 @@ export default {
           );
           if (idx !== -1) profileStore.projects[idx] = res.data;
         } else {
-          const res = await axios.post("/api/projects/", payload, { headers });
+          const res = await axios.post(apiUrl("/projects/"), payload, { headers });
           project = res.data;
           profileStore.projects.push(res.data);
         }
@@ -366,7 +369,7 @@ export default {
             const imagePayload = new FormData();
             imagePayload.append("project", project.id);
             imagePayload.append("image", file);
-            await axios.post("/api/project-images/", imagePayload, { headers });
+            await axios.post(apiUrl("/project-images/"), imagePayload, { headers });
           }
         }
 
@@ -459,7 +462,7 @@ export default {
         const headers = {
           Authorization: `Token ${authStore.token}`,
         };
-        const res = await axios.patch(`/api/projects/${project.id}/`, payload, {
+        const res = await axios.patch(apiUrl(`/projects/${project.id}/`), payload, {
           headers,
         });
         const idx = profileStore.projects.findIndex((p) => p.id === project.id);
