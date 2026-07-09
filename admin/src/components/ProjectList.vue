@@ -178,16 +178,41 @@
             </div>
           </div>
           <div class="form-group">
-            <label>Video Links (comma-separated URLs)</label>
-            <input
-              v-model="videoLinksInput"
-              type="text"
-              placeholder="https://youtube.com/watch?v=xxx, https://vimeo.com/xxx"
-            />
-            <small
-              >Enter video URLs separated by commas (YouTube, Vimeo,
-              etc.)</small
-            >
+            <label>Video Links</label>
+            <div class="video-links-container">
+              <div class="video-links-input-wrapper">
+                <input
+                  v-model="newVideoLink"
+                  type="url"
+                  placeholder="https://youtube.com/watch?v=xxx"
+                  @keyup.enter="addVideoLink"
+                />
+                <button
+                  type="button"
+                  @click="addVideoLink"
+                  class="btn btn-small btn-add"
+                >
+                  + Add
+                </button>
+              </div>
+              <div v-if="formData.video_links.length" class="video-links-list">
+                <div
+                  v-for="(link, idx) in formData.video_links"
+                  :key="idx"
+                  class="video-link-item"
+                >
+                  <span class="video-link-text">{{ link }}</span>
+                  <button
+                    type="button"
+                    @click="removeVideoLink(idx)"
+                    class="btn btn-small btn-danger"
+                  >
+                    ✕
+                  </button>
+                </div>
+              </div>
+              <small>Enter YouTube, Vimeo, or other video URLs</small>
+            </div>
           </div>
           <div class="form-group checkbox">
             <label>
@@ -226,7 +251,7 @@ export default {
     const showForm = ref(false);
     const editingProject = ref(null);
     const technologiesInput = ref("");
-    const videoLinksInput = ref("");
+    const newVideoLink = ref("");
 
     const formData = ref({
       title: "",
@@ -319,10 +344,6 @@ export default {
         .split(",")
         .map((t) => t.trim())
         .filter((t) => t.length > 0);
-      formData.value.video_links = videoLinksInput.value
-        .split(",")
-        .map((t) => t.trim())
-        .filter((t) => t.length > 0);
 
       try {
         const payload = new FormData();
@@ -397,7 +418,8 @@ export default {
           project.is_visible !== undefined ? project.is_visible : true,
       };
       technologiesInput.value = (project.technologies || []).join(", ");
-      videoLinksInput.value = (project.video_links || []).join(", ");
+      formData.value.video_links = [...(project.video_links || [])];
+      newVideoLink.value = "";
 
       // Load existing additional images
       additionalFiles.value = [];
@@ -446,13 +468,26 @@ export default {
         is_visible: true,
       };
       technologiesInput.value = "";
-      videoLinksInput.value = "";
+      formData.value.video_links = [];
+      newVideoLink.value = "";
       additionalFiles.value = [];
       additionalImagePreviews.value = [];
       selectedFile.value = null;
       imagePreview.value = "";
       if (fileInput.value) fileInput.value.value = "";
       if (additionalFileInput.value) additionalFileInput.value.value = "";
+    };
+
+    const addVideoLink = () => {
+      const link = newVideoLink.value.trim();
+      if (link && !formData.value.video_links.includes(link)) {
+        formData.value.video_links.push(link);
+        newVideoLink.value = "";
+      }
+    };
+
+    const removeVideoLink = (idx) => {
+      formData.value.video_links.splice(idx, 1);
     };
 
     const toggleVisibility = async (project) => {
@@ -487,7 +522,9 @@ export default {
       editingProject,
       formData,
       technologiesInput,
-      videoLinksInput,
+      newVideoLink,
+      addVideoLink,
+      removeVideoLink,
       fileInput,
       imagePreview,
       additionalFileInput,
@@ -668,6 +705,54 @@ export default {
 .form-group small {
   color: #7f8c8d;
   font-size: 0.85rem;
+}
+
+.video-links-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.video-links-input-wrapper {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.video-links-input-wrapper input {
+  flex: 1;
+}
+
+.btn-add {
+  background-color: #27ae60;
+  color: white;
+}
+
+.btn-add:hover {
+  background-color: #219a52;
+}
+
+.video-links-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.video-link-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  background: #f8f9fa;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.video-link-text {
+  font-size: 0.85rem;
+  color: #555;
+  word-break: break-all;
+  flex: 1;
+  margin-right: 0.5rem;
 }
 
 .image-upload-area {

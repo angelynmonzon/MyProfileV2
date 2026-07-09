@@ -18,6 +18,7 @@
             'experience',
             'education',
             'projects',
+            'certificates',
           ]"
           :key="tab"
           @click="activeTab = tab"
@@ -364,6 +365,18 @@
         </div>
         <ProjectList />
       </div>
+
+      <!-- Certificates -->
+      <div v-show="activeTab === 'certificates'" class="section">
+        <h2>Certificates</h2>
+        <div class="form-group checkbox">
+          <label>
+            <input v-model="profileData.show_certificates" type="checkbox" @change="saveProfile" />
+            Show certificates section in portfolio
+          </label>
+        </div>
+        <CertificateList />
+      </div>
     </div>
   </div>
 </template>
@@ -374,6 +387,7 @@ import { useProfileStore } from "../stores/profile";
 import ExperienceList from "../components/ExperienceList.vue";
 import EducationList from "../components/EducationList.vue";
 import ProjectList from "../components/ProjectList.vue";
+import CertificateList from "../components/CertificateList.vue";
 
 export default {
   name: "ProfileCMS",
@@ -381,6 +395,7 @@ export default {
     ExperienceList,
     EducationList,
     ProjectList,
+    CertificateList,
   },
   setup() {
     const profileStore = useProfileStore();
@@ -431,6 +446,7 @@ export default {
       show_experience: true,
       show_education: true,
       show_projects: true,
+      show_certificates: true,
     });
 
     const activeTab = ref("basic");
@@ -480,6 +496,8 @@ export default {
               data.show_education !== undefined ? data.show_education : true,
             show_projects:
               data.show_projects !== undefined ? data.show_projects : true,
+            show_certificates:
+              data.show_certificates !== undefined ? data.show_certificates : true,
           };
           console.log("Profile data set:", profileData.value);
         }
