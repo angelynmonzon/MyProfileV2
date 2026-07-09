@@ -82,6 +82,14 @@ export default {
       try {
         const data = await fetchPublicProfile()
         profile.value = Array.isArray(data) ? data[0] || null : data
+        
+        // Update favicon with hero photo
+        if (profile.value?.profile_image_url || profile.value?.profile_image) {
+          const favicon = document.getElementById('favicon')
+          if (favicon) {
+            favicon.href = profile.value.profile_image_url || profile.value.profile_image
+          }
+        }
       } catch (err) {
         console.error('Failed to load profile:', err)
       } finally {

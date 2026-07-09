@@ -201,14 +201,39 @@
                   :key="idx"
                   class="video-link-item"
                 >
-                  <span class="video-link-text">{{ link }}</span>
-                  <button
-                    type="button"
-                    @click="removeVideoLink(idx)"
-                    class="btn btn-small btn-danger"
-                  >
-                    ✕
-                  </button>
+                  <div class="video-link-content">
+                    <div class="video-link-preview">
+                      <iframe
+                        v-if="isYouTube(link)"
+                        :src="getYouTubeEmbedUrl(link)"
+                        frameborder="0"
+                        allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+                        allowfullscreen
+                        class="video-preview-embed"
+                      ></iframe>
+                      <iframe
+                        v-else-if="isVimeo(link)"
+                        :src="getVimeoEmbedUrl(link)"
+                        frameborder="0"
+                        allow="autoplay; fullscreen; picture-in-picture"
+                        allowfullscreen
+                        class="video-preview-embed"
+                      ></iframe>
+                      <div v-else class="video-preview-placeholder">
+                        <span>▶ Video</span>
+                      </div>
+                    </div>
+                    <div class="video-link-info">
+                      <span class="video-link-text">{{ link }}</span>
+                      <button
+                        type="button"
+                        @click="removeVideoLink(idx)"
+                        class="btn btn-small btn-danger"
+                      >
+                        ✕
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
               <small>Enter YouTube, Vimeo, or other video URLs</small>
@@ -490,6 +515,36 @@ export default {
       formData.value.video_links.splice(idx, 1);
     };
 
+    const isYouTube = (url) => {
+      return url && (url.includes("youtube.com") || url.includes("youtu.be"));
+    };
+
+    const getYouTubeEmbedUrl = (url) => {
+      const videoId = extractYouTubeId(url);
+      return videoId ? `https://www.youtube.com/embed/${videoId}?rel=0&modestbranding=1&playsinline=1` : url;
+    };
+
+    const extractYouTubeId = (url) => {
+      const regExp =
+        /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=|shorts\/)([^#&?]*).*/;
+      const match = url.match(regExp);
+      return match && match[2].length === 11 ? match[2] : null;
+    };
+
+    const isVimeo = (url) => {
+      return url && url.includes("vimeo.com");
+    };
+
+    const getVimeoEmbedUrl = (url) => {
+      const videoId = extractVimeoId(url);
+      return videoId ? `https://player.vimeo.com/video/${videoId}` : url;
+    };
+
+    const extractVimeoId = (url) => {
+      const match = url.match(/vimeo\.com\/(\d+)/);
+      return match ? match[1] : null;
+    };
+
     const toggleVisibility = async (project) => {
       try {
         const payload = new FormData();
@@ -525,6 +580,10 @@ export default {
       newVideoLink,
       addVideoLink,
       removeVideoLink,
+      isYouTube,
+      getYouTubeEmbedUrl,
+      isVimeo,
+      getVimeoEmbedUrl,
       fileInput,
       imagePreview,
       additionalFileInput,
@@ -737,22 +796,43 @@ export default {
   gap: 0.5rem;
 }
 
-.video-link-item {
+.video-link-content {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  width: 100%;
+}
+
+.video-link-preview {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  background: #000;
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.video-preview-embed {
+  width: 100%;
+  height: 100%;
+  border: none;
+}
+
+.video-preview-placeholder {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: #2c3e50;
+  color: #e67e22;
+  font-size: 0.9rem;
+}
+
+.video-link-info {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 0.5rem 0.75rem;
-  background: #f8f9fa;
-  border: 1px solid #ddd;
-  border-radius: 4px;
-}
-
-.video-link-text {
-  font-size: 0.85rem;
-  color: #555;
-  word-break: break-all;
-  flex: 1;
-  margin-right: 0.5rem;
+  gap: 0.5rem;
 }
 
 .image-upload-area {

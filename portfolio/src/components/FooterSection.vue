@@ -3,7 +3,7 @@
     <div class="container">
       <div class="footer-top">
         <a href="#hero" @click.prevent="scrollToTop" class="footer-logo">
-          <span class="script">Ging</span>
+          <span class="script">Angelyn</span>
         </a>
         <p class="footer-tagline">
           Virtual Assistant · Social Media Manager · Creative Professional

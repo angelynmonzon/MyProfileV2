@@ -2,7 +2,7 @@
   <header class="navbar" :class="{ scrolled: isScrolled }">
     <div class="nav-container">
       <a href="#hero" class="nav-logo" @click.prevent="scrollTo('#hero')">
-        <span class="script">Ging</span>
+        <span class="script">Angelyn</span>
       </a>
       <nav class="nav-links" :class="{ open: menuOpen }">
         <a href="#about" @click.prevent="scrollTo('#about')">About</a>
