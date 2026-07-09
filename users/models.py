@@ -51,7 +51,7 @@ class Profile(models.Model):
     full_name = models.CharField(max_length=200, blank=True)
     
     # Contact Information
-    email = models.EmailField(blank=True)
+    email = models.JSONField(default=list, blank=True, help_text="List of email addresses")
     phone = models.CharField(max_length=20, blank=True)
     location = models.CharField(max_length=200, blank=True)
     website_url = models.URLField(blank=True)

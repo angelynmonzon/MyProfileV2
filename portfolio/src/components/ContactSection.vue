@@ -11,11 +11,19 @@
           Ready to work together? Reach out and let's discuss how I can help your business grow.
         </p>
         <div class="contact-items">
-          <div v-if="profile?.email" class="contact-item">
+          <div v-if="hasEmails" class="contact-item">
             <span class="contact-icon">✉️</span>
-            <div>
+            <div class="contact-emails">
               <p class="contact-label">Email</p>
-              <a :href="'mailto:' + profile.email" target="_blank" class="contact-value">{{ profile.email }}</a>
+              <a
+                v-for="(email, idx) in emailList"
+                :key="idx"
+                :href="'mailto:' + email"
+                target="_blank"
+                class="contact-value"
+              >
+                {{ email }}
+              </a>
             </div>
           </div>
         </div>
@@ -34,7 +42,16 @@
 <script>
 export default {
   name: 'ContactSection',
-  props: ['profile']
+  props: ['profile'],
+  computed: {
+    emailList() {
+      if (!this.profile?.email) return [];
+      return Array.isArray(this.profile.email) ? this.profile.email : [this.profile.email];
+    },
+    hasEmails() {
+      return this.emailList.length > 0;
+    },
+  }
 }
 </script>
 
@@ -72,6 +89,12 @@ export default {
 
 .contact-icon {
   font-size: 1.5rem;
+}
+
+.contact-emails {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
 }
 
 .contact-label {

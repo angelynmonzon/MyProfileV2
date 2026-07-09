@@ -1,6 +1,6 @@
 <template>
   <div class="profile-cms">
-    <h1>Profile Management</h1>
+    <h1>Portfolio Management</h1>
 
     <div v-if="loading" class="loading">Loading...</div>
 
@@ -142,7 +142,40 @@
           </div>
           <div class="form-group">
             <label>Email</label>
-            <input v-model="profileData.email" type="email" />
+            <div class="email-container">
+              <div class="email-input-wrapper">
+                <input
+                  v-model="newEmail"
+                  type="email"
+                  placeholder="email@example.com"
+                  @keyup.enter="addEmail"
+                />
+                <button
+                  type="button"
+                  @click="addEmail"
+                  class="btn btn-small btn-add"
+                >
+                  + Add
+                </button>
+              </div>
+              <div v-if="profileData.email.length" class="email-list">
+                <div
+                  v-for="(email, idx) in profileData.email"
+                  :key="idx"
+                  class="email-item"
+                >
+                  <span class="email-text">{{ email }}</span>
+                  <button
+                    type="button"
+                    @click="removeEmail(idx)"
+                    class="btn btn-small btn-danger"
+                  >
+                    ✕
+                  </button>
+                </div>
+              </div>
+              <small>Enter email addresses</small>
+            </div>
           </div>
           <div class="form-group">
             <label>Phone</label>
@@ -407,6 +440,7 @@ export default {
     const heroPreview = ref(null);
     const aboutFile = ref(null);
     const aboutPreview = ref(null);
+    const newEmail = ref("");
 
     const onHeroChange = (e) => {
       const file = e.target.files[0];
@@ -429,7 +463,7 @@ export default {
       title: "",
       hero_description: "",
       bio: "",
-      email: "",
+      email: [],
       phone: "",
       location: "",
       website_url: "",
@@ -473,7 +507,7 @@ export default {
             title: data.title || "",
             hero_description: data.hero_description || "",
             bio: data.bio || "",
-            email: data.email || "",
+            email: data.email || [],
             phone: data.phone || "",
             location: data.location || "",
             website_url: data.website_url || "",
@@ -602,6 +636,18 @@ export default {
       profileData.value.skills[gi].skills.splice(si, 1);
     };
 
+    const addEmail = () => {
+      const email = newEmail.value.trim();
+      if (email && !profileData.value.email.includes(email)) {
+        profileData.value.email.push(email);
+        newEmail.value = "";
+      }
+    };
+
+    const removeEmail = (idx) => {
+      profileData.value.email.splice(idx, 1);
+    };
+
     onMounted(() => {
       loadProfile();
     });
@@ -614,6 +660,7 @@ export default {
       aboutFile,
       aboutPreview,
       onAboutChange,
+      newEmail,
       loading,
       error,
       saveProfile,
@@ -623,6 +670,8 @@ export default {
       removeSkillGroup,
       addSkillItem,
       removeSkillItem,
+      addEmail,
+      removeEmail,
       activeTab,
     };
   },
@@ -666,6 +715,45 @@ export default {
   background: #3498db;
   color: white;
   font-weight: 600;
+}
+
+.email-container {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.email-input-wrapper {
+  display: flex;
+  gap: 0.5rem;
+}
+
+.email-input-wrapper input {
+  flex: 1;
+}
+
+.email-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.email-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.5rem 0.75rem;
+  background: #f8f9fa;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
+
+.email-text {
+  font-size: 0.85rem;
+  color: #555;
+  word-break: break-all;
+  flex: 1;
+  margin-right: 0.5rem;
 }
 
 .image-upload-row {
