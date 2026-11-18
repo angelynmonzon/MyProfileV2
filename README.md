@@ -29,6 +29,29 @@ A full-stack portfolio website with Django backend, Vue.js frontend, and Supabas
 - **Authentication**: Token-based authentication
 - **Modern UI**: Clean, responsive Vue.js interface
 
+### Skills Data Format
+
+`Profile.skills` is a JSON field. The canonical format is a list of categories, each holding skill objects with a visibility flag:
+
+```json
+[
+  {
+    "category": "Social Media",
+    "skills": [
+      { "name": "Facebook", "is_visible": true },
+      { "name": "Canva", "is_visible": false }
+    ]
+  }
+]
+```
+
+For backward compatibility, the admin Skills tab also accepts legacy data and normalizes it on load:
+
+- Skills stored as plain strings inside a category (e.g. `"skills": ["Facebook", "Canva"]`) become `{ "name": ..., "is_visible": true }`.
+- A flat list with no categories (e.g. `["Facebook", "Canva"]`) is placed in a single `"Skills"` category.
+
+Clicking **Save Skills** writes the data back in the canonical format. The public `SkillsSection` component renders both formats and hides skills with `is_visible: false`.
+
 ## Project Structure
 
 ```

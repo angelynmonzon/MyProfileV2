@@ -497,7 +497,7 @@ export default {
             twitter_url: data.twitter_url || "",
             github_url: data.github_url || "",
             services_offered: data.services_offered || [],
-            skills: data.skills || [],
+            skills: normalizeSkills(data.skills),
             is_available:
               data.is_available !== undefined ? data.is_available : true,
             show_services:
@@ -597,6 +597,28 @@ export default {
     const removeService = (index) => {
       profileData.value.services_offered.splice(index, 1);
     };
+
+    // Skills may be stored as plain strings (legacy/seeded data) or as
+    // { name, is_visible } objects. Normalize so the editor can bind to them.
+    function normalizeSkillItem(s) {
+      if (s && typeof s === "object") {
+        return { name: s.name || "", is_visible: s.is_visible !== false };
+      }
+      return { name: String(s ?? ""), is_visible: true };
+    }
+
+    function normalizeSkills(skills) {
+      if (!Array.isArray(skills) || skills.length === 0) return [];
+      const first = skills[0];
+      if (first && typeof first === "object" && "category" in first) {
+        return skills.map((g) => ({
+          category: g.category || "",
+          skills: Array.isArray(g.skills) ? g.skills.map(normalizeSkillItem) : [],
+        }));
+      }
+      // Flat list of skills -> single group
+      return [{ category: "Skills", skills: skills.map(normalizeSkillItem) }];
+    }
 
     const addSkillGroup = () => {
       profileData.value.skills.push({ category: "", skills: [] });
@@ -898,13 +920,36 @@ h2 {
   padding: 0.2rem 0.2rem 0.2rem 0.5rem;
 }
 
-.skill-tag-item input {
+.skill-tag-item input[type="text"] {
   border: none;
   outline: none;
   font-size: 0.85rem;
-  width: 110px;
+  width: 140px;
   background: transparent;
   padding: 0.1rem 0.25rem;
+}
+
+.skill-tag-item .visibility-toggle {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  font-size: 0.8rem;
+  color: #555;
+  white-space: nowrap;
+  cursor: pointer;
+  margin: 0 0.25rem;
+}
+
+.skill-tag-item .visibility-toggle input {
+  margin: 0;
+}
+
+.skill-tag-item .btn-small {
+  border-radius: 50%;
+  width: 26px;
+  height: 26px;
+  padding: 0;
+  line-height: 1;
 }
 
 .btn {
